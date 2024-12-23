@@ -1,0 +1,337 @@
+const AnswerSchema = new Schema({
+    userId: { type: Types.ObjectId, require: true },
+    content: { type: Types.ObjectId, require: true },
+    code: { type: { fileType: String, code: String } },
+    vote: [{ type: Types.ObjectId }],
+});
+
+const ChatMessageSchema = new Schema<ChatMessageDocument>({
+    senderId: { type: Types.ObjectId, require: true, ref: 'User' },
+    roomChatId: { type: Types.ObjectId, require: true, ref: 'RoomChat' },
+    content: { type: String, require: true },
+    seenBy: [{ type: Types.ObjectId, ref: 'User' }],
+    media: [{ type: Types.ObjectId, ref: 'Media' }],
+});
+
+const CommentSchema = new Schema<CommentDocument>({
+    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    postId: { type: Schema.Types.ObjectId, ref: 'Post', required: true },
+    content: { type: String, required: true },
+    post: { type: Schema.Types.ObjectId, ref: 'Post', required: true },
+    likes: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+    isReply: { type: Boolean, default: false },
+    parent: { type: Schema.Types.ObjectId, ref: 'Comment' },
+    replies: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
+    createdAt: { type: Date, default: Date.now() },
+    updatedAt: { type: Date, default: Date.now() },
+});
+
+const FollowerSchema = new Schema<FollowerDocument>(
+    {
+        userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+        followerId: {
+            type: Schema.Types.ObjectId,
+            ref: 'User',
+            required: true,
+        },
+    },
+    { timestamps: true }
+);
+
+const FriendSchema = new Schema<FriendDocument>(
+    {
+        users: {
+            type: [Schema.Types.ObjectId],
+            required: true,
+            validate: {
+                validator: (arr: string[]) => arr.length === 2,
+                message: 'The "users" array must contain exactly 2 user IDs.',
+            },
+        },
+        intimacyScore: {
+            type: Number,
+            default: 0,
+            min: 0,
+        },
+    },
+    { timestamps: true }
+);
+
+const HashtagSchema = new Schema<HashtagDocument>(
+    {
+        name: { type: String, required: true, unique: true, trim: true },
+        usageCount: { type: Number, default: 0 },
+    },
+    { timestamps: true }
+);
+
+const JobTitleSchema = new Schema<JobTitleDocument>(
+    {
+        title: { type: String, required: true, unique: true },
+        description: { type: String },
+        popularity: { type: Number, default: 0 },
+    },
+    { timestamps: true }
+);
+
+const likeSchema = new Schema<LikeDocument>({
+    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    postId: { type: Schema.Types.ObjectId, ref: 'Post' },
+    commentId: { type: Schema.Types.ObjectId, ref: 'Comment' },
+    type: { type: String, enum: ['post', 'comment'], required: true },
+});
+
+const MediaSchema = new Schema<MediaDocument>(
+    {
+        userId: { type: Schema.Types.ObjectId, ref: 'User' },
+        url: { type: String, required: true },
+        type: { type: String, enum: ['image', 'video'], required: true },
+    },
+    { timestamps: true }
+);
+
+const NotificationSchema = new Schema<NotificationDocument>(
+    {
+        type: {
+            type: String,
+            enum: ['personal', 'followers', 'broadcast'], // Loại notification
+            required: true,
+        },
+
+        recipients: [
+            {
+                userId: {
+                    type: Schema.Types.ObjectId,
+                    ref: 'User',
+                    required: true,
+                }, // ID người nhận
+                isRead: { type: Boolean, default: false }, // Trạng thái đã đọc của từng người
+            },
+        ],
+
+        target: {
+            type: Schema.Types.ObjectId,
+            refPath: 'targetType',
+        },
+        targetType: {
+            type: String,
+            enum: ['User', 'Post', 'Comment', 'Group'],
+        },
+
+        message: { type: String, required: true },
+        metadata: { type: Object },
+    },
+    { timestamps: true }
+);
+
+const PendingRequestSchema = new Schema<PendingRequestDocument>(
+    {
+        senderId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+        receiverId: {
+            type: Schema.Types.ObjectId,
+            ref: 'User',
+            required: true,
+        },
+        requestType: {
+            type: String,
+            enum: ['friend', 'follow'],
+            required: true,
+        },
+        status: {
+            type: String,
+            enum: ['pending', 'accepted', 'rejected'],
+            default: 'pending',
+        },
+    },
+    { timestamps: true }
+);
+
+const PostSchema = new Schema<PostDocument>(
+    {
+        userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+        content: { type: String, required: true },
+        likes: [{ type: Schema.Types.ObjectId, ref: 'Like' }],
+        comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
+        hashTags: [{ type: Schema.Types.ObjectId, ref: 'Hashtag' }],
+        media: [{ type: Schema.Types.ObjectId, ref: 'Media' }],
+        status: {
+            type: String,
+            enum: ['public', 'private', 'hidden', 'friend'],
+            required: true,
+            default: 'public',
+        },
+        view: { type: Number, default: 0 },
+        interestScore: { type: Number, default: 0 },
+        isBlocked: { type: Boolean, default: false },
+    },
+    { timestamps: true }
+);
+
+const QuestionSchema = new Schema<QuestionDocument>({
+    userId: { type: Types.ObjectId, ref: 'User', require: true },
+    topic: { type: Types.ObjectId, ref: 'Topic', require: true },
+    question: { type: String, require: true },
+    code: {
+        fileType: {
+            type: String,
+            enum: ['c', 'cpp', 'java', 'python', 'javascript', 'typescript'],
+        },
+        code: String,
+    },
+    image: { type: String },
+    vote: [{ type: Schema.ObjectId, ref: 'User' }],
+});
+
+const RefreshTokenSchema = new Schema<RefreshTokenDocument>({
+    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    refreshToken: { type: String, required: true },
+    expiresAt: { type: Date, required: true },
+});
+const RoomChatSchema = new Schema<RoomChatDocument>({
+    name: { type: String, required: true },
+    members: {
+        type: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+        required: true,
+    },
+    isGroup: { type: Boolean, default: false },
+    groupAvatar: { type: String, default: '' },
+    messages: [{ type: Schema.Types.ObjectId, ref: 'Message' }],
+});
+const TopicSchema = new Schema({
+    name: { type: String, required: true },
+    description: { type: String },
+    interestScore: { type: Number, default: 0 },
+});
+
+
+
+const WorkExperienceSchema = new Schema<WorkExperienceDocument>(
+    {
+        userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+        jobTitleId: {
+            type: Schema.Types.ObjectId,
+            ref: 'JobTitle',
+            required: true,
+        },
+        company: { type: String, required: true },
+        startDate: { type: Date, required: true },
+        endDate: { type: Date },
+        isCurrent: { type: Boolean, default: false },
+        description: { type: String },
+    },
+    { timestamps: true }
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/////////////////////////////////
+const UserSchema = new Schema<UserDocument>(
+    {
+        firstName: { type: String, trim: true },
+        lastName: { type: String, trim: true },
+        username: { type: String, required: true, unique: true, trim: true },
+        password: { type: String, required: true, minlength: 6 },
+        email: {
+            type: String,
+            required: true,
+            unique: true,
+            match: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+        },
+        avatar: { type: String, default: '' },
+        handle: { type: String, unique: true, required: true, trim: true },
+        professional: { type: String, trim: true },
+        friendCount: { type: Number, default: 0 },
+        followerCount: { type: Number, default: 0 },
+        followingCount: { type: Number, default: 0 },
+        role: { type: String, enum: roles, default: 'user' },
+        oauthProvider: { type: String, trim: true },
+        isTempt: { type: Boolean, default: true },
+        isTwoFactorAuthEnabled: { type: Boolean, default: false },
+        isBlock: { type: Boolean, default: false },
+    },
+    { timestamps: true }
+);
+
+const UserProfileSchema = new Schema(
+    {
+        userId: {
+            type: Schema.Types.ObjectId,
+            ref: 'User',
+            required: true,
+            unique: true,
+        },
+        bio: { type: String, trim: true },
+        phone: { type: String, match: /^[0-9]{10,15}$/ },
+        coverPage: { type: String, trim: true },
+        jobTitle: { type: Schema.Types.ObjectId, ref: 'JobTitle' },
+        socials: [
+            {
+                type: {
+                    type: String,
+                    enum: socials,
+                    required: true,
+                },
+                link: { type: String, match: /^https?:\/\/[^\s$.?#].[^\s]*$/ },
+            },
+        ],
+        links: [
+            {
+                title: { type: String, trim: true },
+                link: { type: String, match: /^https?:\/\/[^\s$.?#].[^\s]*$/ },
+            },
+        ],
+        skills: [{ type: String, trim: true }],
+        projects: [
+            {
+                projectName: {
+                    type: String,
+                    trim: true,
+                },
+                link: {
+                    type: String,
+                    match: /^https?:\/\/[^\s$.?#].[^\s]*$/,
+                },
+            },
+        ],
+        friends: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+        followers: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+        followings: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+        interests: [
+            {
+                topic: { type: String, trim: true, ref: 'Topic' },
+                hashtag: { type: String, trim: true, ref: 'Hashtag' },
+                popularity: { type: Number, default: 0 },
+                ref: 'Hashtag',
+            },
+        ],
+        address: [{ type: Schema.Types.ObjectId, ref: 'Addresses' }],
+    },
+    { timestamps: true }
+);
