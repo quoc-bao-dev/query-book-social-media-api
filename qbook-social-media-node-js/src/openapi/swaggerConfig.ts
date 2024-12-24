@@ -1,7 +1,9 @@
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import { Express } from 'express';
-import config from './config';
+import config from '../config/config';
+import authSwagger from './authSwagger';
+import userSwagger from './userSwagger';
 
 // Định nghĩa cấu hình Swagger
 const swaggerOptions = {
@@ -25,9 +27,14 @@ const swaggerOptions = {
         },
         servers: [
             {
-                url: `http://localhost:${config.PORT}`, // URL server của bạn
+                url: `http://localhost:${config.PORT}/api/v1`, // URL server của bạn
             },
         ],
+        tags: [...authSwagger.tags, ...userSwagger.tags],
+        paths: {
+            ...authSwagger.paths,
+            ...userSwagger.paths,
+        },
     },
     apis: ['./src/router/*.routes.ts'], // Đường dẫn tới file chứa route
 };

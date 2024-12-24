@@ -15,7 +15,7 @@ export interface UserDocument extends Document {
     followingCount: number;
     role: RoleType;
     oauthProvider: string;
-    isTempt: boolean;
+    isActive: boolean;
     isTwoFactorAuthEnabled: boolean;
     isBlock: boolean;
     createdAt: Date;
@@ -44,7 +44,7 @@ const UserSchema = new Schema<UserDocument>(
         followingCount: { type: Number, default: 0 },
         role: { type: String, enum: roles, default: 'user' },
         oauthProvider: { type: String, trim: true },
-        isTempt: { type: Boolean, default: true },
+        isActive: { type: Boolean, default: false },
         isTwoFactorAuthEnabled: { type: Boolean, default: false },
         isBlock: { type: Boolean, default: false },
     },

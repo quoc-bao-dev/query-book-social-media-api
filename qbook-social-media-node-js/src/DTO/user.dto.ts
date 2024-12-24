@@ -1,4 +1,4 @@
-import { UserDocument } from '../model/user.schema';
+import { UserDocument } from '../models/user.schema';
 
 export class UserDTO {
     username: string;
