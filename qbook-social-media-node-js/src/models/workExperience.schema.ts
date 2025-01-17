@@ -1,10 +1,10 @@
 import { Document, ObjectId, Schema, model } from 'mongoose';
 
-interface WorkExperienceDocument extends Document {
+export interface WorkExperienceDocument extends Document {
     userId: ObjectId;
     jobTitleId: ObjectId;
     company: string;
-    startDate: Date;
+    startDate?: Date;
     endDate?: Date;
     isCurrent: boolean;
     description?: string;

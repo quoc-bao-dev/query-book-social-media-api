@@ -1,0 +1,210 @@
+LoginResponse:
+    type: object
+    properties:
+        accessToken:
+            type: string
+            example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzZlMTdhN2JlZmIxMjE0Y2IwYzZiZjEiLCJpYXQiOjE3MzU0MzA3NDYsImV4cCI6MTczNTQzMTY0Nn0.Abiv8HXk6WHAuhlhv4k8sv8flVQQKeBd8jp3O0i3TF4
+        refreshToken:
+            type: string
+            example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzZlMTdhN2JlZmIxMjE0Y2IwYzZiZjEiLCJpYXQiOjE3MzU0MzA3NDYsImV4cCI6MTczNjAzNTU0Nn0.QDwRWuEdzpAY6Itaor6zIbXyDSWo4A_n3cBta4Ae5g0
+
+RefreshTokenResponse:
+    type: object
+    properties:
+        refreshToken:
+            type: string
+            example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzZlMTdhN2JlZmIxMjE0Y2IwYzZiZjEiLCJpYXQiOjE3MzU0MzA3NDYsImV4cCI6MTczNjAzNTU0Nn0.QDwRWuEdzpAY6Itaor6zIbXyDSWo4A_n3cBta4Ae5g0
+
+AccessTokenResponse:
+    type: object
+    properties:
+        accessToken:
+            type: string
+            example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzZlMTdhN2JlZmIxMjE0Y2IwYzZiZjEiLCJpYXQiOjE3MzU0MzA3NDYsImV4cCI6MTczNTQzMTY0Nn0.Abiv8HXk6WHAuhlhv4k8sv8flVQQKeBd8jp3O0i3TF4
+
+UserProfileResponse:
+    type: object
+    properties:
+        id:
+            type: string
+            example: 676e17a7befb1214cb0c6bf1
+        firstName:
+            type: string
+            example: Quoc Bao
+        lastName:
+            type: string
+            example: Truong
+        fullName:
+            type: string
+            example: Quoc Bao Truong
+        handle:
+            type: string
+            example: '@quoc-bao'
+        avatar:
+            type: string
+        socials:
+            type: array
+            items:
+                type: string
+        links:
+            type: array
+            items:
+                type: string
+        skills:
+            type: array
+            items:
+                type: string
+        projects:
+            type: array
+            items:
+                type: string
+        friendCount:
+            type: integer
+            example: 0
+        followerCount:
+            type: integer
+            example: 0
+        followingCount:
+            type: integer
+            example: 0
+        friends:
+            type: array
+            items:
+                type: string
+        followers:
+            type: array
+            items:
+                type: string
+        followings:
+            type: array
+            items:
+                type: string
+        interests:
+            type: array
+            items:
+                type: string
+        address:
+            type: array
+            items:
+                type: string
+        createdAt:
+            type: string
+            format: date-time
+            example: 2024-12-27T02:57:43.391Z
+
+UpdateUserRequest:
+    type: object
+    properties:
+        firstName:
+            type: string
+        lastName:
+            type: string
+        handle:
+            type: string
+        avatar:
+            $ref: './schemas.yaml#/Media'
+        bio:
+            type: string
+        phone:
+            type: string
+        coverPage:
+            $ref: './schemas.yaml#/Media'
+        jobTitle:
+            type: string
+        socials:
+            type: array
+            items:
+                type: object
+                properties:
+                    type:
+                        type: string
+                        enum:
+                            [
+                                facebook,
+                                instagram,
+                                twitter,
+                                github,
+                                linkedin,
+                                youtube,
+                            ]
+                    url:
+                        type: string
+        links:
+            type: array
+            items:
+                type: string
+        skills:
+            type: array
+            items:
+                type: string
+        projects:
+            type: array
+            items:
+                type: string
+
+CreatePostRequest:
+    type: object
+    properties:
+        content:
+            type: string
+        hashTags:
+            type: array
+            items:
+                type: string
+        status:
+            type: string
+        media:
+            type: array
+            items:
+                type: object
+                properties:
+                    fileName:
+                        type: string
+                        nullable: true
+                    url:
+                        type: string
+                        nullable: true
+                    type:
+                        type: string
+                        enum: [image, video]
+                    sourceType:
+                        type: string
+PostResponse:
+    type: object
+    properties:
+        postId:
+            type: string
+        content:
+            type: string
+        media:
+            type: array
+            items:
+                $ref: './schemas.yaml#/Media'
+        createdAt:
+            type: string
+        updatedAt:
+            type: string
+
+CommentRequest:
+    properties:
+        content:
+            type: string
+        parent:
+            type: string
+            nullable: true
+        isReply:
+            type: boolean
+            nullable: true
+        media:
+            type: object
+            properties:
+                fileName:
+                    type: string
+                    nullable: true
+                url:
+                    type: string
+                    nullable: true
+                type:
+                    type: string
+                sourceType:
+                    type: string

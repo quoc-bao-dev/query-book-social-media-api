@@ -1,7 +1,8 @@
 import { model, ObjectId, Schema } from 'mongoose';
+import { UserDocument } from './user.schema';
 
 export interface LikeDocument {
-    userId: ObjectId;
+    userId: ObjectId | UserDocument;
     postId: ObjectId;
     commentId: ObjectId;
     type: 'post' | 'comment';

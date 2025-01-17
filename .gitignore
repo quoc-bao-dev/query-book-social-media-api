@@ -1,5 +1,6 @@
 # Ignore node_modules and dist directories
 /node_modules
+*/node_modules
 /dist
 .vscode
 
@@ -23,3 +24,4 @@ yarn-error.log*
 # Ignore local files
 *.local
 
+*/public/uploads

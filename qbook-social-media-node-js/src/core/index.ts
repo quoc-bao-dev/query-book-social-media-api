@@ -1,4 +1,8 @@
-import { ApiResponse, Pagination } from './ApiResponse';
+import {
+    ApiResponse,
+    ApiWithPaginationResponse,
+    Pagination,
+} from './ApiResponse';
 
 export const createResponse = ({
     status = 200,
@@ -20,10 +24,10 @@ export const createPaginationResponse = ({
 }: {
     status: number;
     message: string;
-    data: any;
     pagination: Pagination;
+    data: any;
 }) => {
-    return ApiResponse.create(status, message, data, pagination);
+    return ApiWithPaginationResponse.create(status, message, data, pagination);
 };
 
 export { errorHandler, wrapAsync } from './handler';

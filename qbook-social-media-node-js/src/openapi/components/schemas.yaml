@@ -1,0 +1,46 @@
+Media:
+    type: object
+properties:
+    type:
+        type: string
+        enum:
+            - image
+            - video
+    sourceType:
+        type: string
+        enum:
+            - url
+            - file
+    url:
+        type: string
+        nullable: true
+    fileName:
+        type: string
+        nullable: true
+
+CommentFeed:
+    properties:
+        postId:
+            type: string
+            nullable: true
+        content:
+            type: string
+        parent:
+            type: string
+            nullable: true
+        isReply:
+            type: boolean
+            nullable: true
+        media:
+            type: object
+            properties:
+                fileName:
+                    type: string
+                    nullable: true
+                url:
+                    type: string
+                    nullable: true
+                type:
+                    type: string
+                sourceType:
+                    type: string

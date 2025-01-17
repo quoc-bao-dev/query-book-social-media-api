@@ -1,0 +1,14 @@
+{
+    "name": "message-server",
+    "version": "1.0.0",
+    "main": "index.js",
+    "license": "MIT",
+    "scripts": {
+        "dev": "bun run --watch src/index.ts"
+    },
+    "dependencies": {
+        "express": "^4.21.2",
+        "mongoose": "^8.9.3",
+        "socket.io": "^4.8.1"
+    }
+}

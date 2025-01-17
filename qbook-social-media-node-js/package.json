@@ -4,13 +4,15 @@
     "scripts": {
         "start": "node --env-file=.env.production dist/index.js",
         "build": "tsc",
-        "dev": "bun --watch --env-file=.env.development src/index.ts",
+        "dev": "bun --watch --env-file=.env.development src/index.ts nodemon",
+        "docs:watch": "nodemon",
         "test-utils": "bun src/test.ts"
     },
     "license": "MIT",
     "dependencies": {
         "bcrypt": "^5.1.1",
         "cors": "^2.8.5",
+        "date-fns": "^4.1.0",
         "express": "^4.21.2",
         "ioredis": "^5.4.2",
         "jsonwebtoken": "^9.0.2",
@@ -18,9 +20,12 @@
         "mongoose": "^8.8.4",
         "morgan": "^1.10.0",
         "nodemailer": "^6.9.16",
+        "nodemon": "3.1.9",
+        "swagger-cli": "^4.0.4",
         "swagger-jsdoc": "^6.2.8",
         "swagger-ui-express": "^5.0.1",
-        "winston": "^3.17.0"
+        "winston": "^3.17.0",
+        "yamljs": "^0.3.0"
     },
     "devDependencies": {
         "@types/bcrypt": "^5.0.2",
@@ -34,6 +39,7 @@
         "@types/nodemailer": "^6.4.17",
         "@types/swagger-jsdoc": "^6.0.4",
         "@types/swagger-ui-express": "^4.1.7",
+        "@types/yamljs": "^0.2.34",
         "ts-node": "^10.9.2",
         "typescript": "^5.7.2"
     }

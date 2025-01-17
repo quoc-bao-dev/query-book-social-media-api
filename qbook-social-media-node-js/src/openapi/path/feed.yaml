@@ -1,0 +1,298 @@
+GetPostById:
+    get:
+        summary: Get post by id
+        tags:
+            - Feed
+        security:
+            - bearerAuth: []
+        parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                  type: string
+        responses:
+            200:
+                description: Get post by id successfully
+                content:
+                    application/json:
+                        schema:
+                            $ref: '../components/components.yaml#/PostResponse'
+    patch:
+        summary: Update post
+        tags:
+            - Feed
+        security:
+            - bearerAuth: []
+        parameters:
+            - in: path
+              name: id
+              required: true
+              schema:
+                  type: string
+        requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        properties:
+                            content:
+                                type: string
+                            hashTags:
+                                type: array
+                                items:
+                                    type: string
+                            status:
+                                type: string
+                                enum:
+                                    - public
+                                    - private
+                                    - friend
+                            media:
+                                type: array
+                                items:
+                                    type: object
+                                    properties:
+                                        id:
+                                            type: string
+                                        action:
+                                            type: string
+                                            enum:
+                                                - add
+                                                - remove
+                                        fileName:
+                                            type: string
+                                            nullable: true
+                                        url:
+                                            type: string
+                                            nullable: true
+                                        type:
+                                            type: string
+                                            enum:
+                                                - image
+                                                - video
+                                        sourceType:
+                                            type: string
+        responses:
+            200:
+                description: Update post successfully
+    delete:
+        summary: Delete post
+        tags:
+            - Feed
+        security:
+            - bearerAuth: []
+        parameters:
+            - in: path
+              name: id
+              required: true
+              schema:
+                  type: string
+        responses:
+            200:
+                description: Delete post successfully
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                status:
+                                    type: integer
+                                    description: Status code
+                                    example: 200
+                                message:
+                                    type: string
+                                    description: Message
+                                    example: Delete post successfully
+
+CreatePost:
+    get:
+        summary: List posts
+        tags:
+            - Feed
+        security:
+            - bearerAuth: []
+        parameters:
+            - in: query
+              name: page
+              required: false
+              schema:
+                  type: integer
+                  example: 1
+            - in: query
+              name: limit
+              required: false
+              schema:
+                  type: integer
+                  example: 10
+
+        responses:
+            200:
+                description: List posts successfully
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                status:
+                                    type: integer
+                                    description: Status code
+                                    example: 200
+                                message:
+                                    type: string
+                                    description: Message
+                                    example: List posts successfully
+
+    post:
+        summary: Create post
+        tags:
+            - Feed
+        security:
+            - bearerAuth: []
+        requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        $ref: '../components/components.yaml#/CreatePostRequest'
+        responses:
+            200:
+                description: Create post successfully
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                status:
+                                    type: integer
+                                    example: 200
+                                message:
+                                    type: string
+                                    example: Create post successful
+                                data:
+                                    type: object
+                                    properties:
+                                        author:
+                                            type: object
+                                            properties:
+                                                name:
+                                                    type: string
+                                                    example: johndoe
+                                                email:
+                                                    type: string
+                                                    example: pythagore1102@gmail.com
+                                        content:
+                                            type: string
+                                            example: New Post
+                                        likesCount:
+                                            type: integer
+                                            example: 0
+                                        likes:
+                                            type: array
+                                            items:
+                                                type: object
+                                        commentsCount:
+                                            type: integer
+                                            example: 0
+                                        comments:
+                                            type: array
+                                            items:
+                                                type: object
+                                        hashTags:
+                                            type: array
+                                            items:
+                                                type: string
+                                        media:
+                                            type: array
+                                            items:
+                                                type: object
+                                                properties:
+                                                    url:
+                                                        type: string
+                                                        example: string
+                                                    file:
+                                                        type: string
+                                                        example: file-1
+                                                    type:
+                                                        type: string
+                                                        example: image
+                                                    sourceType:
+                                                        type: string
+                                                        example: file
+                                        status:
+                                            type: string
+                                            example: public
+                                        createdAt:
+                                            type: string
+                                            format: date-time
+                                            example: 2024-12-29T14:02:30.843Z
+                                        updatedAt:
+                                            type: string
+                                            format: date-time
+                                            example: 2024-12-29T14:02:30.843Z
+
+LikePost:
+    post:
+        summary: List posts
+        tags:
+            - Feed
+        security:
+            - bearerAuth: []
+        parameters:
+            - in: path
+              name: id
+              required: true
+              schema:
+                  type: string
+        responses:
+            200:
+                description: List posts successfully
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                status:
+                                    type: integer
+                                    description: Status code
+                                    example: 200
+                                message:
+                                    type: string
+                                    description: Message
+                                    example: List posts successfully
+
+CommentPost:
+    post:
+        summary: List posts
+        tags:
+            - Feed
+        security:
+            - bearerAuth: []
+        parameters:
+            - in: path
+              required: true
+              name: id
+              schema:
+                  type: string
+        requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        $ref: '../components/components.yaml#/CommentRequest'
+        responses:
+            200:
+                description: Comment post successfully
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                status:
+                                    type: integer
+                                    description: Status code
+                                    example: 200
+                                message:
+                                    type: string
+                                    description: Message
+                                    example: Comment posts successfully

@@ -1,13 +1,18 @@
 import ApiError from '../core/ApiError';
 import check2fa from '../libs/redis/check2fa.redis';
+import forgotPasswordRedis from '../libs/redis/forgotPassword.redis';
 import { activeAccountRedis } from '../libs/redis/otp.redis';
+import { tokenRedis } from '../libs/redis/token.redis';
 import { CreateUserInput } from '../models/types/user.type';
 import User from '../models/user.schema';
+import UserProfile from '../models/userProfile.schema';
 import {
     genAccessToken,
     genActiveAccountToken,
     genRefreshToken,
+    genResetPasswordToken,
     genTowFAToken,
+    verifyRefreshToken,
 } from '../utils/authToken.utils';
 import { comparePassword, hashPassword } from '../utils/bcrypt.utils';
 import { toHandleName } from '../utils/convertString';
@@ -41,6 +46,10 @@ class AuthService {
             email,
             password: passwordHashed,
             handle,
+        });
+
+        const userProfile = await UserProfile.create({
+            userId: user.id,
         });
 
         if (!user) {
@@ -147,6 +156,94 @@ class AuthService {
         return {
             accessToken,
             refreshToken,
+        };
+    }
+
+    async refreshToken(refreshToken: string) {
+        const verifyToken = verifyRefreshToken(refreshToken);
+
+        if (!verifyToken) {
+            throw ApiError.badRequest('Refresh token is invalid');
+        }
+
+        const { userId } = verifyToken as {
+            userId: string;
+        };
+
+        const verifyRefresh = await tokenService.verifyRefreshToken(
+            userId,
+            refreshToken
+        );
+
+        if (!verifyRefresh) {
+            throw ApiError.badRequest('Refresh token is invalid');
+        }
+
+        const accessToken = genAccessToken(userId);
+
+        return {
+            accessToken,
+        };
+    }
+
+    async forgotPassword(email: string) {
+        const user = await User.findOne({ email });
+        if (!user) {
+            throw ApiError.badRequest('Email not found');
+        }
+
+        const OTP = generateOTP();
+
+        sendEmail({
+            to: email,
+            subject: 'Verify your email',
+            text: `Use the following OTP to verify your email: ${OTP}`,
+            userName: user.username,
+            otp: OTP,
+        });
+
+        forgotPasswordRedis.setOTP(user.id.toString(), OTP);
+        const resetPassToken = genResetPasswordToken(user.id.toString());
+
+        return {
+            resetPassToken,
+        };
+    }
+
+    async resetPassword(userId: string, otp: string, newPassword: string) {
+        const isValidOTP = await forgotPasswordRedis.verifyOTP(userId, otp);
+        if (!isValidOTP) {
+            throw ApiError.badRequest('OTP is invalid');
+        }
+
+        await forgotPasswordRedis.deleteOTP(userId);
+
+        const hashedPassword = await hashPassword(newPassword);
+        await User.updateOne(
+            { _id: userId },
+            { $set: { password: hashedPassword } }
+        );
+
+        return {
+            message: 'Password reset successful',
+        };
+    }
+
+    async logout(userId: string, accessToken: string, refreshToken: string) {
+        await tokenService.deleteRefreshToken(userId, refreshToken);
+        await tokenRedis.addAccessTokenToBackList(userId, accessToken);
+
+        return {
+            message: 'Logout successful',
+        };
+    }
+
+    async logoutAll(userId: string, accessToken: string) {
+        await tokenRedis.addAccessTokenToBackList(userId, accessToken);
+        await tokenService.deleteAllRefreshToken(userId);
+
+        return {
+            message: 'Logout all successful',
         };
     }
 }

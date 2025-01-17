@@ -1,18 +1,23 @@
-import { model, ObjectId, Schema } from 'mongoose';
+import { model, ObjectId, Schema, Document } from 'mongoose';
 import { HashtagDocument } from './hashtag.schema';
 import { MediaDocument } from './media.schema';
+import { UserDocument } from './user.schema';
+import { LikeDocument } from './like.schema';
+import { CommentDocument } from './comment.schema';
+import { PostStatusType } from './types/type';
 
 export interface PostDocument extends Document {
-    userId: ObjectId;
+    userId: ObjectId | UserDocument;
     content: string;
-    likes: (string | ObjectId)[];
-    comments: (string | ObjectId)[];
+    likes: (string | LikeDocument)[];
+    comments: (string | CommentDocument)[];
     hashTags: (string | HashtagDocument)[];
     media: (string | MediaDocument)[];
-    status: string;
+    status: PostStatusType;
     view: number;
     interestScore: number;
     isBlocked: boolean;
+    isDeleted: boolean;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -33,6 +38,7 @@ const PostSchema = new Schema<PostDocument>(
         view: { type: Number, default: 0 },
         interestScore: { type: Number, default: 0 },
         isBlocked: { type: Boolean, default: false },
+        isDeleted: { type: Boolean, default: false },
     },
     { timestamps: true }
 );

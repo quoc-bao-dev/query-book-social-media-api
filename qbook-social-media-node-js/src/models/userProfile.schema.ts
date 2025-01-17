@@ -1,28 +1,37 @@
-import { Document, model, ObjectId, Schema, Types } from 'mongoose';
+import { Document, model, ObjectId, Schema } from 'mongoose';
 import { SocialType } from './types/type';
+import { UserDocument } from './user.schema';
+import { MediaDocument } from './media.schema';
+import { JobTitleDocument } from './jobTitle.schema';
 
 export interface UserProfileDocument extends Document {
     userId: ObjectId;
     bio?: string;
     phone?: string;
-    coverPage?: string;
-    jobTitle?: ObjectId;
+    coverPage?: ObjectId | MediaDocument;
+    jobTitle?: ObjectId | JobTitleDocument;
     socials?: {
         type: SocialType;
-        link: string;
+        url: string;
     }[];
     links?: {
         title: string;
-        link: string;
+        url: string;
     }[];
-    skills?: string[];
+    skills?: {
+        name: string;
+        display: string;
+    }[];
     projects?: {
         projectName: string;
-        link: string;
+        description: string;
+        startDate: Date;
+        endDate: Date;
+        url: string;
     }[];
-    friends?: ObjectId[];
-    followers?: ObjectId[];
-    followings?: ObjectId[];
+    friends?: ObjectId[] | UserDocument[];
+    followers?: ObjectId[] | UserDocument[];
+    followings?: ObjectId[] | UserDocument[];
     interests?: {
         topic: ObjectId;
         hashtag: ObjectId;
@@ -51,7 +60,7 @@ const UserProfileSchema = new Schema(
         },
         bio: { type: String, trim: true },
         phone: { type: String, match: /^[0-9]{10,15}$/ },
-        coverPage: { type: String, trim: true },
+        coverPage: { type: Schema.Types.ObjectId, ref: 'Media' },
         jobTitle: { type: Schema.Types.ObjectId, ref: 'JobTitle' },
         socials: [
             {
@@ -60,25 +69,57 @@ const UserProfileSchema = new Schema(
                     enum: socials,
                     required: true,
                 },
-                link: { type: String, match: /^https?:\/\/[^\s$.?#].[^\s]*$/ },
+                url: { type: String },
             },
         ],
         links: [
             {
                 title: { type: String, trim: true },
-                link: { type: String, match: /^https?:\/\/[^\s$.?#].[^\s]*$/ },
+                url: { type: String },
             },
         ],
-        skills: [{ type: String, trim: true }],
+        skills: [
+            {
+                name: { type: String, trim: true },
+                display: { type: String, trim: true },
+            },
+        ],
         projects: [
             {
                 projectName: {
                     type: String,
                     trim: true,
                 },
-                link: {
+                description: {
                     type: String,
-                    match: /^https?:\/\/[^\s$.?#].[^\s]*$/,
+                    trim: true,
+                },
+                startDate: {
+                    type: Date,
+                    validate: {
+                        validator: (v: string) => {
+                            return Boolean(
+                                Date.parse(v) && !isNaN(new Date(v).getTime())
+                            );
+                        },
+                        message: (props: { value: string }) =>
+                            `${props.value} is not a valid ISO date string`,
+                    },
+                },
+                endDate: {
+                    type: Date,
+                    validate: {
+                        validator: (v: string) => {
+                            return Boolean(
+                                Date.parse(v) && !isNaN(new Date(v).getTime())
+                            );
+                        },
+                        message: (props: { value: string }) =>
+                            `${props.value} is not a valid ISO date string`,
+                    },
+                },
+                url: {
+                    type: String,
                 },
             },
         ],
@@ -90,7 +131,6 @@ const UserProfileSchema = new Schema(
                 topic: { type: String, trim: true, ref: 'Topic' },
                 hashtag: { type: String, trim: true, ref: 'Hashtag' },
                 popularity: { type: Number, default: 0 },
-                ref: 'Hashtag',
             },
         ],
         address: [{ type: Schema.Types.ObjectId, ref: 'Addresses' }],

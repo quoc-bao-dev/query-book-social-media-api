@@ -1,4 +1,5 @@
-import { Document, model, Schema } from 'mongoose';
+import { Document, model, ObjectId, Schema } from 'mongoose';
+import { MediaDocument } from './media.schema';
 import { RoleType } from './types/type';
 
 export interface UserDocument extends Document {
@@ -7,7 +8,7 @@ export interface UserDocument extends Document {
     username: string;
     password: string;
     email: string;
-    avatar: string;
+    avatar: ObjectId | MediaDocument;
     handle: string;
     professional: string;
     friendCount: number;
@@ -36,7 +37,7 @@ const UserSchema = new Schema<UserDocument>(
             unique: true,
             match: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
         },
-        avatar: { type: String, default: '' },
+        avatar: { type: Schema.Types.ObjectId, ref: 'Media' },
         handle: { type: String, unique: true, required: true, trim: true },
         professional: { type: String, trim: true },
         friendCount: { type: Number, default: 0 },

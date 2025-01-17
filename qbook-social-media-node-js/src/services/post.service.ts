@@ -1,0 +1,214 @@
+import ApiError from '../core/ApiError';
+import PostDTO from '../DTO/post.dto';
+import Post from '../models/post.schema';
+import {
+    CreatePostInput,
+    CreatePostServiceInput,
+    UpdatePostInput,
+} from '../models/types/post.type';
+import hashTagService from './hashTag.service';
+import mediaService from './media.service';
+import userService from './user.service';
+
+class PostService {
+    async create(payload: CreatePostServiceInput) {
+        const userInDB = await userService.findUserById(payload.userId);
+        const userId = userInDB.id;
+
+        const media =
+            payload.media &&
+            (await Promise.all(
+                payload.media?.map(async (item) => {
+                    const media = await mediaService.create({
+                        userId: userId,
+                        file: item.fileName,
+                        url: item.url,
+                        type: item.type,
+                        sourceType: item.sourceType,
+                    });
+                    return media.id;
+                })
+            ));
+
+        const lstHashTags =
+            payload.hashTags &&
+            (await Promise.all(
+                payload.hashTags.map(async (item) => {
+                    const hashTag = await hashTagService.create(item);
+                    return hashTag.id;
+                })
+            ));
+
+        const postPayload: CreatePostInput = {
+            userId: userId,
+            content: payload.content,
+            status: payload.status,
+            hashTags: lstHashTags,
+            media: media,
+        };
+
+        const post = await Post.create(postPayload);
+
+        const newPost = await post.populate('hashTags media userId');
+        return new PostDTO(newPost).toResponse();
+    }
+
+    async getPosts({
+        userId,
+        limit,
+        page,
+        query,
+    }: {
+        userId?: string;
+        page: number;
+        limit: number;
+        query?: any;
+    }) {
+        const skip = (page - 1) * limit;
+
+        const conditionSearch = {} as any;
+        conditionSearch['isDeleted'] = { $in: [false, undefined] };
+
+        if (userId) {
+            const user = await userService.findUserProfileById(userId);
+
+            conditionSearch['$or'] = [
+                {
+                    status: 'public',
+                },
+                {
+                    status: 'private',
+                    userId: userId,
+                },
+                {
+                    status: {
+                        $in: ['public', 'friend'],
+                    },
+                    userId: {
+                        $in: user.friends,
+                    },
+                },
+                {
+                    status: {
+                        $in: ['public'],
+                    },
+                    userId: {
+                        $in: user.followings,
+                    },
+                },
+            ];
+        } else {
+            conditionSearch['status'] = 'public';
+        }
+
+        const lsPost = await Post.find(conditionSearch)
+            .populate('hashTags media userId')
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit);
+
+        return {
+            pagination: {
+                page: page,
+                limit: limit,
+                total: await Post.countDocuments(conditionSearch),
+            },
+            data: lsPost.map((item) => new PostDTO(item).toResponse()),
+        };
+    }
+
+    async getPostById(id: string) {
+        const post = await Post.findOne({
+            _id: id,
+            isDeleted: { $in: [false, undefined] },
+        }).populate('hashTags media userId likes comments');
+
+        if (!post) {
+            throw ApiError.notFound('Post not found');
+        }
+
+        const populatedPost = await post.populate(
+            'likes.userId comments.userId comments.media'
+        );
+
+        return new PostDTO(populatedPost).toResponse();
+    }
+
+    async updatePost(id: string, userId: string, payload: UpdatePostInput) {
+        const post = await this.findPostById(id);
+        const user = await userService.findUserProfileById(userId);
+
+        if (post.userId.toString() !== userId) {
+            throw ApiError.forbidden('You are not allowed to update this post');
+        }
+
+        if (payload.content) {
+            post.content = payload.content;
+        }
+
+        if (payload.status) {
+            post.status = payload.status!;
+        }
+
+        if (payload.hashTags) {
+            const lstHashTags = await Promise.all(
+                payload.hashTags.map(async (item) => {
+                    const hashTag = await hashTagService.create(item as string);
+                    return hashTag.id;
+                })
+            );
+            post.hashTags = lstHashTags;
+        }
+
+        if (payload.media) {
+            await Promise.all(
+                payload.media.map(async (item) => {
+                    if (item.action === 'add') {
+                        const media = await mediaService.create({
+                            userId: user.id,
+                            file: item.fileName,
+                            url: item.url,
+                            type: item.type,
+                            sourceType: item.sourceType,
+                        });
+                        post.media.push(media.id);
+                    }
+
+                    if (item.action === 'remove') {
+                        post.media = post.media.filter(
+                            (mediaId) => mediaId.toString() !== item.id
+                        );
+                        await mediaService.deleteMedia(item.id);
+                    }
+                })
+            );
+        }
+
+        await post.save();
+        return post;
+    }
+
+    async deletePost(id: string, userId: string) {
+        const post = await this.findPostById(id);
+
+        if (post.userId.toString() !== userId) {
+            throw ApiError.forbidden('You are not allowed to delete this post');
+        }
+
+        post.isDeleted = true;
+        await post.save();
+        return post;
+    }
+    async findPostById(id: string) {
+        const post = await Post.findOne({
+            _id: id,
+            isDeleted: { $in: [false, undefined] },
+        });
+        if (!post) {
+            throw ApiError.notFound('Post not found');
+        }
+        return post;
+    }
+}
+
+export default new PostService();

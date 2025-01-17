@@ -23,3 +23,16 @@ export const isTokenValid = (token: string, secret: string): boolean => {
         return false;
     }
 };
+
+export const decodeToken = (token: string) => {
+    try {
+        // Decode the token without verifying
+        const decoded = jwt.decode(token, { complete: true });
+        // Return the payload if decoding is successful
+
+        return decoded?.payload || null;
+    } catch (error) {
+        console.error('Failed to decode token:', error);
+        return null;
+    }
+};

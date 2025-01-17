@@ -1,0 +1,6 @@
+{
+    "watch": ["./src/openapi"],
+    "ignore": ["./src/openapi/openapi.yaml"],
+    "ext": "yaml json",
+    "exec": "swagger-cli bundle ./src/openapi/swagger.yaml --outfile ./src/openapi/openapi.yaml  --type yaml"
+}

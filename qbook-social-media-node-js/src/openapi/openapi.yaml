@@ -1,0 +1,1703 @@
+openapi: 3.0.1
+info:
+  title: Query Book Social Media API
+  description: |
+    Query Book là một nền tảng mạng xã hội hiện đại được thiết kế để kết nối cộng đồng, hỗ trợ học tập và xây dựng sự nghiệp.
+
+    **Các tính năng chính:**
+    - **New Feed**: Chia sẻ trạng thái, hình ảnh và theo dõi hoạt động của bạn bè.
+    - **Profile**: Tạo và quản lý hồ sơ cá nhân và nghề nghiệp.
+    - **QnA**: Đặt câu hỏi và trả lời, tương tự như Stack Overflow.
+    - **Tìm kiếm việc làm**: Kết nối người dùng với các cơ hội việc làm.
+    - **Chat**: Nhắn tin và giao tiếp thời gian thực với bạn bè và đồng nghiệp.
+
+    API hỗ trợ phát triển dựa trên mô hình Scrum, đảm bảo khả năng mở rộng, hiệu quả và dễ sử dụng cho các nhà phát triển.
+  version: 1.0.0
+tags:
+  - name: Authentication
+    description: APIs related to authentication
+  - name: User
+    description: APIs related to user management
+  - name: Feed
+    description: APIs related to feed management
+  - name: Comment
+    description: APIs related to comment management
+  - name: Story
+    description: APIs related to story management
+  - name: Friend
+    description: APIs related to friend management
+  - name: Follow
+    description: APIs related to follow management
+  - name: Admin
+    description: APIs related to admin management
+servers:
+  - url: 'http://localhost:3005/api/v1'
+paths:
+  /auth/login:
+    post:
+      summary: Login
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: Username of the user
+                  example: pythagore1102@gmail.com
+                password:
+                  type: string
+                  description: Password of the user
+                  example: password1234
+      responses:
+        '200':
+          description: Login successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: Status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Message
+                    example: Login successful
+                  data:
+                    type: object
+                    properties:
+                      accessToken:
+                        type: string
+                        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzZlMTdhN2JlZmIxMjE0Y2IwYzZiZjEiLCJpYXQiOjE3MzU0MzA3NDYsImV4cCI6MTczNTQzMTY0Nn0.Abiv8HXk6WHAuhlhv4k8sv8flVQQKeBd8jp3O0i3TF4
+                      refreshToken:
+                        type: string
+                        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzZlMTdhN2JlZmIxMjE0Y2IwYzZiZjEiLCJpYXQiOjE3MzU0MzA3NDYsImV4cCI6MTczNjAzNTU0Nn0.QDwRWuEdzpAY6Itaor6zIbXyDSWo4A_n3cBta4Ae5g0
+  /auth/login/verify-2fa:
+    post:
+      summary: Verify OTP for tow factor authentication (TFA)
+      tags:
+        - Authentication
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                opt:
+                  type: string
+                  description: OTP code
+                  example: 123456
+                twoFaToken:
+                  type: string
+                  description: Two factor authentication token
+                  example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzZlMTdhN2JlZmIxMjE0Y2IwYzZiZjEiLCJpYXQiOjE3MzU0MzA3NDYsImV4cCI6MTczNTQzMTY0Nn0.Abiv8HXk6WHAuhlhv4k8sv8flVQQKeBd8jp3O0i3TF4
+      responses:
+        '200':
+          description: Login successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: Status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Message
+                    example: Login successful
+                  data:
+                    $ref: '#/paths/~1auth~1login/post/responses/200/content/application~1json/schema/properties/data'
+  /auth/register:
+    post:
+      summary: Register
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: Username of the user
+                  example: pythagore1102@gmail.com
+                username:
+                  type: string
+                  description: Username of the user
+                  example: Quoc Bao
+                password:
+                  type: string
+                  description: Password of the user
+                  example: password1234
+      responses:
+        '200':
+          description: Register successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: Status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Message
+                    example: Register successful
+                  data:
+                    type: object
+                    properties:
+                      activeToken:
+                        type: string
+                        description: Active token of the user
+                        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzZlMTdhN2JlZmIxMjE0Y2IwYzZiZjEiLCJpYXQiOjE3MzU0MzA3NDYsImV4cCI6MTczNTQzMTY0Nn0.Abiv8HXk6WHAuhlhv4k8sv8flVQQKeBd8jp3O0i3TF4
+  /auth/register/verify-otp:
+    post:
+      summary: Verify OTP for tow factor authentication (TFA)
+      tags:
+        - Authentication
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                opt:
+                  type: string
+                  description: OTP code
+                  example: 123456
+                twoFaToken:
+                  type: string
+                  description: Two factor authentication token
+      responses:
+        '200':
+          description: Login successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: Status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Message
+                    example: Login successful
+                  data:
+                    $ref: '#/paths/~1auth~1login/post/responses/200/content/application~1json/schema/properties/data'
+  /auth/refresh-token:
+    post:
+      summary: Refresh token
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refreshToken:
+                  type: string
+                  description: Refresh token
+                  example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzZlMTdhN2JlZmIxMjE0Y2IwYzZiZjEiLCJpYXQiOjE3MzU0MzA3NDYsImV4cCI6MTczNTQzMTY0Nn0.Abiv8HXk6WHAuhlhv4k8sv8flVQQKeBd8jp3O0i3TF4
+      responses:
+        '200':
+          description: Refresh token successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: Status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Message
+                    example: Refresh token successful
+                  data:
+                    type: object
+                    properties:
+                      accessToken:
+                        type: string
+                        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzZlMTdhN2JlZmIxMjE0Y2IwYzZiZjEiLCJpYXQiOjE3MzU0MzA3NDYsImV4cCI6MTczNTQzMTY0Nn0.Abiv8HXk6WHAuhlhv4k8sv8flVQQKeBd8jp3O0i3TF4
+  /auth/forgot-password:
+    post:
+      summary: Forgot password
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: Username of the user
+                  example: pythagore1102@gmail.com
+      responses:
+        '200':
+          description: Forgot password successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: Status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Message
+                    example: Forgot password successful
+                  data:
+                    type: object
+                    properties:
+                      resetPassToken:
+                        type: string
+                        description: Reset password token
+                        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzZlMTdhN2JlZmIxMjE0Y2IwYzZiZjEiLCJpYXQiOjE3MzU0MzA3NDYsImV4cCI6MTczNTQzMTY0Nn0.Abiv8HXk6WHAuhlhv4k8sv8flVQQKeBd8jp3O0i3TF4
+  /auth/reset-password:
+    post:
+      summary: Reset password
+      tags:
+        - Authentication
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                otp:
+                  type: string
+                  description: OTP code
+                  example: 123456
+                password:
+                  type: string
+                  description: Password of the user
+                  example: password1234
+                resetPassToken:
+                  type: string
+                  description: Reset password token
+                  example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzZlMTdhN2JlZmIxMjE0Y2IwYzZiZjEiLCJpYXQiOjE3MzU0MzA3NDYsImV4cCI6MTczNTQzMTY0Nn0.Abiv8HXk6WHAuhlhv4k8sv8flVQQKeBd8jp3O0i3TF4
+      responses:
+        '200':
+          description: Reset password successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: Status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Message
+                    example: Reset password successful
+  /auth/verify:
+    post:
+      summary: Verify token
+      tags:
+        - Authentication
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Verify token successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: Status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Message
+                    example: Verify token successful
+  /auth/logout:
+    post:
+      summary: Logout
+      tags:
+        - Authentication
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refreshToken:
+                  type: string
+                  example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzZlMTdhN2JlZmIxMjE0Y2IwYzZiZjEiLCJpYXQiOjE3MzU0MzA3NDYsImV4cCI6MTczNjAzNTU0Nn0.QDwRWuEdzpAY6Itaor6zIbXyDSWo4A_n3cBta4Ae5g0
+      responses:
+        '200':
+          description: Logout successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: Status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Message
+                    example: Logout successful
+  /auth/logout-all:
+    post:
+      summary: Logout all devices
+      tags:
+        - Authentication
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Logout all successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: Status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Message
+                    example: Logout all successful
+  /admin/login:
+    post:
+      summary: Login admin
+      tags:
+        - Admin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: Username of the user
+                  example: pythagore1102@gmail.com
+                password:
+                  type: string
+                  description: Password of the user
+                  example: password1234
+      responses:
+        '200':
+          description: Login admin successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: Status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Message
+                    example: Login admin successful
+  /admin/create-account:
+    post:
+      summary: Create admin
+      tags:
+        - Admin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: Username of the user
+                  example: pythagore1102@gmail.com
+                username:
+                  type: string
+                  description: Username of the user
+                  example: Quoc Bao
+                password:
+                  type: string
+                  description: Password of the user
+                  example: password1234
+                role:
+                  type: string
+                  description: Role of the user
+                  example: admin
+      responses:
+        '200':
+          description: Create admin successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: Status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Message
+                    example: Create admin successful
+  /users/me:
+    get:
+      summary: Get me
+      tags:
+        - User
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Get me successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: 676e17a7befb1214cb0c6bf1
+                  firstName:
+                    type: string
+                    example: Quoc Bao
+                  lastName:
+                    type: string
+                    example: Truong
+                  fullName:
+                    type: string
+                    example: Quoc Bao Truong
+                  handle:
+                    type: string
+                    example: '@quoc-bao'
+                  avatar:
+                    type: string
+                  socials:
+                    type: array
+                    items:
+                      type: string
+                  links:
+                    type: array
+                    items:
+                      type: string
+                  skills:
+                    type: array
+                    items:
+                      type: string
+                  projects:
+                    type: array
+                    items:
+                      type: string
+                  friendCount:
+                    type: integer
+                    example: 0
+                  followerCount:
+                    type: integer
+                    example: 0
+                  followingCount:
+                    type: integer
+                    example: 0
+                  friends:
+                    type: array
+                    items:
+                      type: string
+                  followers:
+                    type: array
+                    items:
+                      type: string
+                  followings:
+                    type: array
+                    items:
+                      type: string
+                  interests:
+                    type: array
+                    items:
+                      type: string
+                  address:
+                    type: array
+                    items:
+                      type: string
+                  createdAt:
+                    type: string
+                    format: date-time
+                    example: '2024-12-27T02:57:43.391Z'
+  '/users/profile/{id}':
+    get:
+      summary: Get user profile
+      tags:
+        - User
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Get user profile successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/paths/~1users~1me/get/responses/200/content/application~1json/schema'
+  /users/profile:
+    patch:
+      summary: Update user profile
+      tags:
+        - User
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                handle:
+                  type: string
+                avatar:
+                  $ref: '#/paths/~1stories/post/requestBody/content/multipart~1form-data/schema/properties/media'
+                bio:
+                  type: string
+                phone:
+                  type: string
+                coverPage:
+                  $ref: '#/paths/~1stories/post/requestBody/content/multipart~1form-data/schema/properties/media'
+                jobTitle:
+                  type: string
+                socials:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                        enum:
+                          - facebook
+                          - instagram
+                          - twitter
+                          - github
+                          - linkedin
+                          - youtube
+                      url:
+                        type: string
+                links:
+                  type: array
+                  items:
+                    type: string
+                skills:
+                  type: array
+                  items:
+                    type: string
+                projects:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Update user profile successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/paths/~1users~1me/get/responses/200/content/application~1json/schema'
+  /users/search:
+    get:
+      summary: Search user
+      tags:
+        - User
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: q
+          required: true
+          schema:
+            type: string
+            example: John
+        - in: query
+          name: page
+          required: false
+          schema:
+            type: integer
+            example: 1
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+            example: 10
+      responses:
+        '200':
+          description: Search user successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/paths/~1users~1me/get/responses/200/content/application~1json/schema'
+  /posts:
+    get:
+      summary: List posts
+      tags:
+        - Feed
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: page
+          required: false
+          schema:
+            type: integer
+            example: 1
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+            example: 10
+      responses:
+        '200':
+          description: List posts successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: Status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Message
+                    example: List posts successfully
+    post:
+      summary: Create post
+      tags:
+        - Feed
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                hashTags:
+                  type: array
+                  items:
+                    type: string
+                status:
+                  type: string
+                media:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      fileName:
+                        type: string
+                        nullable: true
+                      url:
+                        type: string
+                        nullable: true
+                      type:
+                        type: string
+                        enum:
+                          - image
+                          - video
+                      sourceType:
+                        type: string
+      responses:
+        '200':
+          description: Create post successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: Create post successful
+                  data:
+                    type: object
+                    properties:
+                      author:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                            example: johndoe
+                          email:
+                            type: string
+                            example: pythagore1102@gmail.com
+                      content:
+                        type: string
+                        example: New Post
+                      likesCount:
+                        type: integer
+                        example: 0
+                      likes:
+                        type: array
+                        items:
+                          type: object
+                      commentsCount:
+                        type: integer
+                        example: 0
+                      comments:
+                        type: array
+                        items:
+                          type: object
+                      hashTags:
+                        type: array
+                        items:
+                          type: string
+                      media:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            url:
+                              type: string
+                              example: string
+                            file:
+                              type: string
+                              example: file-1
+                            type:
+                              type: string
+                              example: image
+                            sourceType:
+                              type: string
+                              example: file
+                      status:
+                        type: string
+                        example: public
+                      createdAt:
+                        type: string
+                        format: date-time
+                        example: '2024-12-29T14:02:30.843Z'
+                      updatedAt:
+                        type: string
+                        format: date-time
+                        example: '2024-12-29T14:02:30.843Z'
+  '/posts/{id}':
+    get:
+      summary: Get post by id
+      tags:
+        - Feed
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Get post by id successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  postId:
+                    type: string
+                  content:
+                    type: string
+                  media:
+                    type: array
+                    items:
+                      $ref: '#/paths/~1stories/post/requestBody/content/multipart~1form-data/schema/properties/media'
+                  createdAt:
+                    type: string
+                  updatedAt:
+                    type: string
+    patch:
+      summary: Update post
+      tags:
+        - Feed
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                content:
+                  type: string
+                hashTags:
+                  type: array
+                  items:
+                    type: string
+                status:
+                  type: string
+                  enum:
+                    - public
+                    - private
+                    - friend
+                media:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      action:
+                        type: string
+                        enum:
+                          - add
+                          - remove
+                      fileName:
+                        type: string
+                        nullable: true
+                      url:
+                        type: string
+                        nullable: true
+                      type:
+                        type: string
+                        enum:
+                          - image
+                          - video
+                      sourceType:
+                        type: string
+      responses:
+        '200':
+          description: Update post successfully
+    delete:
+      summary: Delete post
+      tags:
+        - Feed
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Delete post successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: Status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Message
+                    example: Delete post successfully
+  '/posts/{id}/like':
+    post:
+      summary: List posts
+      tags:
+        - Feed
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List posts successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: Status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Message
+                    example: List posts successfully
+  '/posts/{id}/comment':
+    post:
+      summary: List posts
+      tags:
+        - Feed
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          required: true
+          name: id
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                content:
+                  type: string
+                parent:
+                  type: string
+                  nullable: true
+                isReply:
+                  type: boolean
+                  nullable: true
+                media:
+                  type: object
+                  properties:
+                    fileName:
+                      type: string
+                      nullable: true
+                    url:
+                      type: string
+                      nullable: true
+                    type:
+                      type: string
+                    sourceType:
+                      type: string
+      responses:
+        '200':
+          description: Comment post successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: Status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Message
+                    example: Comment posts successfully
+  '/comments/{id}/reply':
+    post:
+      summary: Reply comment
+      tags:
+        - Comment
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                media:
+                  $ref: '#/paths/~1stories/post/requestBody/content/multipart~1form-data/schema/properties/media'
+      responses:
+        '200':
+          description: Reply comment successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: Status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Message
+                    example: Reply comment successfully
+  '/comments/{id}/like':
+    post:
+      summary: Like comment
+      tags:
+        - Comment
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Like comment successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: Status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Message
+                    example: Like comment successfully
+  '/comments/{id}':
+    patch:
+      summary: Update comment
+      tags:
+        - Comment
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+      responses:
+        '200':
+          description: Update comment successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: Status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Message
+                    example: Update comment successfully
+    delete:
+      summary: Delete comment
+      tags:
+        - Comment
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Delete comment successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: Status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Message
+                    example: Delete comment successfully
+  /stories:
+    get:
+      summary: Get list story
+      tags:
+        - Story
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Get list story successfully
+          content:
+            application/json:
+              schema:
+                type: string
+    post:
+      summary: Create story
+      tags:
+        - Story
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                media:
+                  type: object
+      responses:
+        '200':
+          description: Create story successfully
+          content:
+            application/json:
+              schema:
+                type: string
+  '/stories/{id}':
+    get:
+      summary: Get story by id
+      tags:
+        - Story
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Get story successfully
+          content:
+            application/json:
+              schema:
+                type: string
+  /friends:
+    get:
+      summary: Get list friend
+      tags:
+        - Friend
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Get list friend successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: Status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Message
+                    example: Get list friend successfully
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          description: ID of the friend
+                          example: 676e17a7befb1214cb0c6bf1
+                        name:
+                          type: string
+                          description: Name of the friend
+                          example: Nguyen Van A
+  /friends/requests:
+    get:
+      summary: Get list friend request
+      tags:
+        - Friend
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Get list friend request successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: Status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Message
+                    example: Get list friend request successfully
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          description: ID of the friend request
+                          example: 676e17a7befb1214cb0c6bf1
+                        name:
+                          type: string
+                          description: Name of the friend request
+                          example: Nguyen Van A
+  /friends/send-request:
+    post:
+      summary: Send friend request
+      tags:
+        - Friend
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                targetId:
+                  type: string
+                  description: ID of the target user
+                  example: 676e17a7befb1214cb0c6bf1
+      responses:
+        '200':
+          description: Send friend request successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: Status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Message
+                    example: Send friend request successfully
+  /friends/accept-request:
+    post:
+      summary: Accept friend request
+      tags:
+        - Friend
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                senderId:
+                  type: string
+                  description: ID of the target user
+                  example: 676e17a7befb1214cb0c6bf1
+      responses:
+        '200':
+          description: Accept friend request successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: Status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Message
+                    example: Accept friend request successfully
+  /friends/reject-request:
+    post:
+      summary: Reject friend request
+      tags:
+        - Friend
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                senderId:
+                  type: string
+                  description: ID of the target user
+                  example: 676e17a7befb1214cb0c6bf1
+      responses:
+        '200':
+          description: Reject friend request successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: Status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Message
+                    example: Reject friend request successfully
+  '/friends/remove-friend/{id}':
+    delete:
+      summary: Remove friend
+      tags:
+        - Friend
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                friendId:
+                  type: string
+                  description: ID of the target user
+                  example: 676e17a7befb1214cb0c6bf1
+      responses:
+        '200':
+          description: Remove friend successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: Status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Message
+                    example: Remove friend successfully
+  /follow:
+    get:
+      summary: Get list follow
+      tags:
+        - Follow
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Get list follow successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: Status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Message
+                    example: Login successful
+                  data:
+                    type: array
+                    items:
+                      type: string
+                      example: 676e17a7befb1214cb0c6bf1
+  '/follow/{id}':
+    post:
+      summary: Follow
+      tags:
+        - Follow
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Follow user successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: Status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Message
+                    example: Login successful
+    delete:
+      summary: UnFollow
+      tags:
+        - Follow
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: UnFollow user successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: Status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Message
+                    example: Login successful
+  /job-titles:
+    get:
+      summary: List job title
+      tags:
+        - Job Title
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List job title successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: Status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Message
+                    example: List job title successfully
+    post:
+      summary: Create job title
+      tags:
+        - Job Title
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+      responses:
+        '200':
+          description: Create job title successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: Status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Message
+                    example: Create job title successfully
+  /work-experiences:
+    get:
+      summary: Get list work experience
+      tags:
+        - WorkExperience
+      responses:
+        '200':
+          description: Get list work experience successfully
+          content:
+            application/json:
+              schema:
+                type: string
+    post:
+      summary: Create work experience
+      tags:
+        - WorkExperience
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                jobTitleId:
+                  type: string
+                company:
+                  type: string
+                description:
+                  type: string
+                startDate:
+                  type: string
+                endDate:
+                  type: string
+      responses:
+        '200':
+          description: Create work experience successfully
+          content:
+            application/json:
+              schema:
+                type: string
+  '/work-experiences/{id}':
+    get:
+      summary: Get work experience by id
+      tags:
+        - WorkExperience
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Get work experience successfully
+          content:
+            application/json:
+              schema:
+                type: string
+    patch:
+      summary: Update work experience
+      tags:
+        - WorkExperience
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                jobTitleId:
+                  type: string
+                company:
+                  type: string
+                description:
+                  type: string
+                startDate:
+                  type: string
+                endDate:
+                  type: string
+      responses:
+        '200':
+          description: Update work experience successfully
+          content:
+            application/json:
+              schema:
+                type: string
+    delete:
+      summary: Delete work experience
+      tags:
+        - WorkExperience
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Delete work experience successfully
+          content:
+            application/json:
+              schema:
+                type: string
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token

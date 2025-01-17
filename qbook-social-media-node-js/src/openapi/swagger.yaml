@@ -1,0 +1,135 @@
+openapi: 3.0.1
+info:
+    title: Query Book Social Media API
+
+    description: |
+        Query Book là một nền tảng mạng xã hội hiện đại được thiết kế để kết nối cộng đồng, hỗ trợ học tập và xây dựng sự nghiệp.
+
+        **Các tính năng chính:**
+        - **New Feed**: Chia sẻ trạng thái, hình ảnh và theo dõi hoạt động của bạn bè.
+        - **Profile**: Tạo và quản lý hồ sơ cá nhân và nghề nghiệp.
+        - **QnA**: Đặt câu hỏi và trả lời, tương tự như Stack Overflow.
+        - **Tìm kiếm việc làm**: Kết nối người dùng với các cơ hội việc làm.
+        - **Chat**: Nhắn tin và giao tiếp thời gian thực với bạn bè và đồng nghiệp.
+
+        API hỗ trợ phát triển dựa trên mô hình Scrum, đảm bảo khả năng mở rộng, hiệu quả và dễ sử dụng cho các nhà phát triển.
+    version: 1.0.0
+
+tags:
+    - name: Authentication
+      description: APIs related to authentication
+    - name: User
+      description: APIs related to user management
+    - name: Feed
+      description: APIs related to feed management
+    - name: Comment
+      description: APIs related to comment management
+    - name: Story
+      description: APIs related to story management
+    - name: Friend
+      description: APIs related to friend management
+    - name: Follow
+      description: APIs related to follow management
+    - name: Admin
+      description: APIs related to admin management
+servers:
+    - url: http://localhost:3005/api/v1
+paths:
+    # auth
+    /auth/login:
+        $ref: './path/auth.yaml#/Login'
+    /auth/login/verify-2fa:
+        $ref: './path/auth.yaml#/LoginVerify'
+    /auth/register:
+        $ref: './path/auth.yaml#/Register'
+    /auth/register/verify-otp:
+        $ref: './path/auth.yaml#/RegisterVerify'
+    /auth/refresh-token:
+        $ref: './path/auth.yaml#/RefreshToken'
+    /auth/forgot-password:
+        $ref: './path/auth.yaml#/ForgotPassword'
+    /auth/reset-password:
+        $ref: './path/auth.yaml#/ResetPassword'
+    /auth/verify:
+        $ref: './path/auth.yaml#/VerifyToken'
+    /auth/logout:
+        $ref: './path/auth.yaml#/Logout'
+    /auth/logout-all:
+        $ref: './path/auth.yaml#/LogoutAll'
+
+    # admin
+    /admin/login:
+        $ref: './path/admin.yaml#/LoginAdmin'
+    /admin/create-account:
+        $ref: './path/admin.yaml#/CreateAdmin'
+    # user
+    /users/me:
+        $ref: './path/user.yaml#/GetMe'
+    /users/profile/{id}:
+        $ref: './path/user.yaml#/GetUserProfile'
+    /users/profile:
+        $ref: './path/user.yaml#/UpdateUserProfile'
+    /users/search:
+        $ref: './path/user.yaml#/SearchUser'
+
+    # feed
+    /posts:
+        $ref: './path/feed.yaml#/CreatePost'
+    /posts/{id}:
+        $ref: './path/feed.yaml#/GetPostById'
+    /posts/{id}/like:
+        $ref: './path/feed.yaml#/LikePost'
+    /posts/{id}/comment:
+        $ref: './path/feed.yaml#/CommentPost'
+
+    # comments
+    /comments/{id}/reply:
+        $ref: './path/comment.yaml#/ReplyComment'
+    /comments/{id}/like:
+        $ref: './path/comment.yaml#/LikeComment'
+    /comments/{id}:
+        $ref: './path/comment.yaml#/DeleteComment'
+
+    # story
+    /stories:
+        $ref: './path/story.yaml#/CreateStory'
+    /stories/{id}:
+        $ref: './path/story.yaml#/GetStoryById'
+
+    # friend
+    /friends:
+        $ref: './path/friend.yaml#/GetListFriend'
+    /friends/requests:
+        $ref: './path/friend.yaml#/GetListFriendRequest'
+    /friends/send-request:
+        $ref: './path/friend.yaml#/SendRequest'
+    /friends/accept-request:
+        $ref: './path/friend.yaml#/AcceptRequest'
+    /friends/reject-request:
+        $ref: './path/friend.yaml#/RejectRequest'
+    /friends/remove-friend/{id}:
+        $ref: './path/friend.yaml#/RemoveFriend'
+
+    # follow
+    /follow:
+        $ref: './path/follow.yaml#/GetListFollow'
+    /follow/{id}:
+        $ref: './path/follow.yaml#/Follow'
+
+    # job title
+    /job-titles:
+        $ref: './path/jobTitle.yaml#/CreateJobTitle'
+
+    # work experience
+    /work-experiences:
+        $ref: './path/workExperience.yaml#/WorkExperience'
+    /work-experiences/{id}:
+        $ref: './path/workExperience.yaml#/WorkExperienceId'
+
+components:
+    securitySchemes:
+        bearerAuth:
+            type: http
+            scheme: bearer
+            bearerFormat: JWT
+            description: JWT token

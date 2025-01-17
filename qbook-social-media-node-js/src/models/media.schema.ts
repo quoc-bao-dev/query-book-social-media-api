@@ -1,10 +1,12 @@
 import { Document, model, ObjectId, Schema } from 'mongoose';
+import { MediaType } from './types/media.type';
 
-export type MediaType = 'image' | 'video';
 export interface MediaDocument extends Document {
-    userId: ObjectId;
-    url: string;
+    userId?: ObjectId;
+    file?: string;
+    url?: string;
     type: MediaType;
+    sourceType: string;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -12,7 +14,9 @@ export interface MediaDocument extends Document {
 const MediaSchema = new Schema<MediaDocument>(
     {
         userId: { type: Schema.Types.ObjectId, ref: 'User' },
-        url: { type: String, required: true },
+        url: { type: String },
+        file: { type: String },
+        sourceType: { type: String, required: true, enum: ['url', 'file'] },
         type: { type: String, enum: ['image', 'video'], required: true },
     },
     { timestamps: true }

@@ -1,0 +1,90 @@
+GetMe:
+    get:
+        summary: Get me
+        tags:
+            - User
+        security:
+            - bearerAuth: []
+        responses:
+            200:
+                description: Get me successfully
+                content:
+                    application/json:
+                        schema:
+                            $ref: '../components/components.yaml#/UserProfileResponse'
+
+GetUserProfile:
+    get:
+        summary: Get user profile
+        tags:
+            - User
+        security:
+            - bearerAuth: []
+        parameters:
+            - in: path
+              name: id
+              required: true
+              schema:
+                  type: string
+        responses:
+            200:
+                description: Get user profile successfully
+                content:
+                    application/json:
+                        schema:
+                            $ref: '../components/components.yaml#/UserProfileResponse'
+
+UpdateUserProfile:
+    patch:
+        summary: Update user profile
+        tags:
+            - User
+        security:
+            - bearerAuth: []
+        requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        $ref: '../components/components.yaml#/UpdateUserRequest'
+        responses:
+            200:
+                description: Update user profile successfully
+                content:
+                    application/json:
+                        schema:
+                            $ref: '../components/components.yaml#/UserProfileResponse'
+
+SearchUser:
+    get:
+        summary: Search user
+        tags:
+            - User
+        security:
+            - bearerAuth: []
+        parameters:
+            - in: query
+              name: q
+              required: true
+              schema:
+                  type: string
+                  example: 'John'
+            - in: query
+              name: page
+              required: false
+              schema:
+                  type: integer
+                  example: 1
+            - in: query
+              name: limit
+              required: false
+              schema:
+                  type: integer
+                  example: 10
+        responses:
+            200:
+                description: Search user successfully
+                content:
+                    application/json:
+                        schema:
+                            $ref: '../components/components.yaml#/UserProfileResponse'
