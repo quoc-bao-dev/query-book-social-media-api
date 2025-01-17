@@ -135,10 +135,12 @@ class UserProfileDTO {
             }
         );
 
-        const avatar = new MediaDTO(this.avatar as MediaDocument).toResponse();
-        const coverPage = new MediaDTO(
-            this.coverPage as MediaDocument
-        ).toResponse();
+        const avatar =
+            this.avatar &&
+            new MediaDTO(this.avatar as MediaDocument).toResponse();
+        const coverPage =
+            this.coverPage &&
+            new MediaDTO(this.coverPage as MediaDocument).toResponse();
 
         const projects = this.projects?.map((_project) => {
             return {
@@ -197,8 +199,6 @@ class UserProfileDTO {
             createdAt: this.createdAt,
         };
     }
-
-    
 }
 
 export default UserProfileDTO;
