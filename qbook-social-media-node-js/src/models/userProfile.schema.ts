@@ -56,7 +56,6 @@ const UserProfileSchema = new Schema(
             type: Schema.Types.ObjectId,
             ref: 'User',
             required: true,
-            unique: true,
         },
         bio: { type: String, trim: true },
         phone: { type: String, match: /^[0-9]{10,15}$/ },

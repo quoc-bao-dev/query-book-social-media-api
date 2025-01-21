@@ -29,12 +29,11 @@ const UserSchema = new Schema<UserDocument>(
     {
         firstName: { type: String, trim: true },
         lastName: { type: String, trim: true },
-        username: { type: String, required: true, unique: true, trim: true },
+        username: { type: String, required: true, trim: true },
         password: { type: String, required: true, minlength: 6 },
         email: {
             type: String,
             required: true,
-            unique: true,
             match: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
         },
         avatar: { type: Schema.Types.ObjectId, ref: 'Media' },

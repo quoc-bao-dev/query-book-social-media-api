@@ -14,7 +14,10 @@ export const authMiddleware = async (
     res: Response,
     next: NextFunction
 ) => {
-    const accessToken = req.headers.authorization?.split(' ')[1];
+    const cookieAccessToken = req.cookies;
+    const accessToken =
+        cookieAccessToken?.accessToken ??
+        req.headers.authorization?.split(' ')[1];
 
     if (!accessToken) {
         next(ApiError.unauthorized());

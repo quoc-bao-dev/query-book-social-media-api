@@ -2,6 +2,13 @@ import mongoose from 'mongoose';
 import app from './app';
 import config from './config/config';
 import redis from './libs/redis';
+import fs from 'fs';
+import https from 'https';
+
+// Đọc chứng chỉ SSL
+const privateKey = fs.readFileSync('certs/localhost-key.pem', 'utf8');
+const certificate = fs.readFileSync('certs/localhost.pem', 'utf8');
+const credentials = { key: privateKey, cert: certificate };
 
 mongoose
     .connect(config.MONGO_URL)
@@ -27,3 +34,9 @@ app.listen(config.PORT, () => {
         `Server running on port ${config.PORT}, http://localhost:${config.PORT}`
     );
 });
+
+// https.createServer(credentials, app).listen(config.PORT, () => {
+//     console.log(
+//         `Server running on port ${config.PORT}, https://localhost:${config.PORT}`
+//     );
+// });

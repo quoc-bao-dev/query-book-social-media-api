@@ -5,6 +5,7 @@ import cron from 'node-cron';
 import path from 'path';
 import { deleteUnusedFiles } from './cron';
 import authMiddleware from './middleware';
+import cors from 'cors';
 
 const port = process.env.PORT || 3008;
 const app = express();
@@ -17,6 +18,12 @@ if (!fs.existsSync(uploadsDir)) {
     fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
+app.use(
+    cors({
+        origin: ['*', 'http://localhost:3000'],
+        credentials: true,
+    })
+);
 app.use(express.static('public/uploads'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -61,7 +68,7 @@ app.post(
 
         res.status(200).json({
             message: 'File uploaded successfully',
-            filePath: `/uploads/${req.file.filename}`,
+            filePath: `/public/uploads/${req.file.filename}`,
         });
     }
 );
@@ -80,7 +87,7 @@ app.post(
         const uploadedFiles = (req.files as Express.Multer.File[]).map(
             (file) => ({
                 filename: file.filename,
-                path: `/uploads/${file.filename}`,
+                path: `/public/uploads/${file.filename}`,
             })
         );
 

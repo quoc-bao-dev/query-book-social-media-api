@@ -18,6 +18,8 @@ const config = {
 
     EMAIL_USER: process.env.EMAIL_USER as string,
     EMAIL_PASS: process.env.EMAIL_PASS as string,
+
+    CORS_ALLOWED_ORIGINS: process.env.CORS_ALLOWED_ORIGINS as string,
 };
 
 if (!config.MONGO_URL) {
