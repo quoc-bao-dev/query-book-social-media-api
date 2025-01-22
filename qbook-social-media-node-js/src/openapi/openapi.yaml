@@ -183,7 +183,7 @@ paths:
                   type: string
                   description: OTP code
                   example: 123456
-                twoFaToken:
+                activeToken:
                   type: string
                   description: Two factor authentication token
       responses:

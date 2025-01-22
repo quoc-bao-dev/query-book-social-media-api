@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { createResponse } from '../core';
-import authService from '../services/auth.service';
 import ApiError from '../core/ApiError';
+import authService from '../services/auth.service';
 import { decodeToken } from '../utils/jwt.utils';
 
 export type RegisterBody = {
@@ -31,6 +31,7 @@ const AuthController = {
 
     async activeAccount(req: Request, res: Response) {
         const { otp } = req.body;
+
         const { userId } = req;
         const { accessToken, refreshToken } = await authService.activeAccount(
             userId!,
