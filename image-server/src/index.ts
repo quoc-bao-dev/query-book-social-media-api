@@ -68,6 +68,7 @@ app.post(
 
         res.status(200).json({
             message: 'File uploaded successfully',
+            fileName: req.file.filename,
             filePath: `/public/uploads/${req.file.filename}`,
         });
     }

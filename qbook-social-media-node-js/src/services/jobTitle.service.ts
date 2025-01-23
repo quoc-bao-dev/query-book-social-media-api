@@ -1,11 +1,14 @@
 import ApiError from '../core/ApiError';
+import JobTitleDTO from '../DTO/jobTitle.dto';
 import JobTitle, { JobTitleDocument } from '../models/jobTitle.schema';
 import { CreateJobTitleServiceInput } from '../models/types/jobTitle.type';
 
 class JobTitleService {
     async getJobTitles() {
         const jobTitles = await JobTitle.find();
-        return jobTitles as JobTitleDocument[];
+
+        const result = jobTitles.map((jobTitle) => new JobTitleDTO(jobTitle));
+        return result;
     }
 
     async create(payload: CreateJobTitleServiceInput) {
