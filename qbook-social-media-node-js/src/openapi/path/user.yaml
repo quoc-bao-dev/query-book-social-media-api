@@ -33,6 +33,27 @@ GetUserProfile:
                     application/json:
                         schema:
                             $ref: '../components/components.yaml#/UserProfileResponse'
+GetSuggestions:
+    get:
+        summary: Get suggestions
+        tags:
+            - User
+        security:
+            - bearerAuth: []
+        parameters:
+            - in: query
+              name: filterMode
+              required: false
+              schema:
+                  type: string
+                  example: 'friend_suggest'
+        responses:
+            200:
+                description: Get suggestions successfully
+                content:
+                    application/json:
+                        schema:
+                            $ref: '../components/components.yaml#/UserProfileResponse'
 
 UpdateUserProfile:
     patch:

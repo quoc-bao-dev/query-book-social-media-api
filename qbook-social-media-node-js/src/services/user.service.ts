@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import ApiError from '../core/ApiError';
 import { UserDTO } from '../DTO/user.dto';
 import UserProfileDTO from '../DTO/userProfile.dto';
@@ -8,6 +9,7 @@ import UserProfile, { UserProfileDocument } from '../models/userProfile.schema';
 import { toHandleName } from '../utils/convertString';
 import jobTitleService from './jobTitle.service';
 import mediaService from './media.service';
+
 class UserService {
     async getMe(userId: string) {
         const user = await this.findUserById(userId);
@@ -21,6 +23,66 @@ class UserService {
             ...userProfile.toObject(),
         };
         return new UserProfileDTO(dto).toPublish();
+    }
+
+    async getSuggestions({
+        page,
+        limit,
+        userId,
+        condition,
+    }: {
+        condition?: any;
+        userId: string;
+        page: number;
+        limit: number;
+    }) {
+        const pipeline: any[] = [];
+        const curUserId = new mongoose.Types.ObjectId(userId);
+
+        if (condition) {
+            if (condition.filterMode === 'friend_suggest') {
+                const curUser = await this.findUserProfileById(userId);
+                const friends = curUser.friends; // Chuyển `friends` thành chuỗi nếu cần
+
+                pipeline.push({
+                    $match: {
+                        _id: { $nin: [...friends, curUserId] }, // Sử dụng `_id` thay vì `id`
+                    },
+                });
+            }
+
+            if (condition.filterMode === 'follow_suggest') {
+                const curUser = await this.findUserProfileById(userId);
+                const followings = curUser.followings; // Chuyển `followings` thành chuỗi nếu cần
+
+                pipeline.push({
+                    $match: {
+                        _id: { $nin: [...followings, curUserId] }, // Sử dụng `_id` thay vì `id`
+                    },
+                });
+            }
+        }
+
+        pipeline.push(
+            {
+                $lookup: {
+                    from: 'media',
+                    localField: 'avatar',
+                    foreignField: '_id',
+                    as: 'avatar',
+                },
+            },
+            {
+                $skip: (page - 1) * limit,
+            },
+            {
+                $limit: limit,
+            }
+        );
+
+        const lsUser = await User.aggregate(pipeline);
+
+        return lsUser.map((user) => new UserDTO(user).toSuggestion());
     }
 
     async getUserById(id: string) {
@@ -41,7 +103,6 @@ class UserService {
 
     async searchUser({
         query,
-        userId,
         page,
         limit,
     }: {
@@ -105,6 +166,7 @@ class UserService {
                 payload.jobTitle
             );
             userProfile.jobTitle = jobTitle.id;
+            user.professional = jobTitle.title;
         }
 
         if (payload.socials) {

@@ -29,6 +29,30 @@ const UserController = {
         res.status(response.status).json(response);
     },
 
+    async getSuggestions(req: Request, res: Response) {
+        const userId = req.userId!;
+        const { filterMode } = req.query;
+
+        const limit = Number(req.query.limit) || 10;
+        const page = Number(req.query.page) || 1;
+
+        const condition = {} as any;
+        if (filterMode) {
+            condition.filterMode = filterMode;
+        }
+        const suggestions = await userService.getSuggestions({
+            userId,
+            condition,
+            limit,
+            page,
+        });
+        const response = createResponse({
+            status: 200,
+            message: 'Get suggestions successful',
+            data: suggestions,
+        });
+        res.status(response.status).json(response);
+    },
     async searchUser(req: Request, res: Response) {
         const { q } = req.query as { q: string };
         const userId = req.userId!;

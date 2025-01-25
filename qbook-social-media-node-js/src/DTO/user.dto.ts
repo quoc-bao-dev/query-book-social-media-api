@@ -11,7 +11,7 @@ export class UserDTO {
     username: string;
     password: string;
     email: string;
-    avatar: ObjectId | MediaDocument;
+    avatar: ObjectId | MediaDocument | MediaDocument[];
     handle: string;
     professional: string;
     friendCount: number;
@@ -57,8 +57,8 @@ export class UserDTO {
             fullName: `${this.firstName} ${this.lastName}`,
             username: this.username,
             email: this.email,
-            avatar: avatar?.toResponse() ?? null,
-            avatarUrl: avatar?.toUrl() ?? null,
+            avatar: avatar?.toResponse(),
+            avatarUrl: avatar?.toUrl(),
             handle: this.handle,
             professional: this.professional,
             friendCount: this.friendCount,
@@ -70,13 +70,33 @@ export class UserDTO {
         };
     }
 
+    toSuggestion() {
+        const avatar =
+            this.avatar &&
+            (this.avatar as MediaDocument[]).length > 0 &&
+            new MediaDTO((this.avatar as MediaDocument[])[0] as MediaDocument);
+
+        return {
+            id: this.id,
+            fullName: `${this.firstName} ${this.lastName}`,
+            professional: this.professional,
+            username: this.username,
+            email: this.email,
+            avatarUrl: avatar && avatar?.toUrl(),
+            handle: this.handle,
+        };
+    }
+
     toUserRequest() {
+        const avatar =
+            this.avatar && new MediaDTO(this.avatar as MediaDocument);
+
         return {
             id: this.id,
             fullName: `${this.firstName} ${this.lastName}`,
             username: this.username,
             email: this.email,
-            avatar: this.avatar,
+            avatar: avatar.toUrl(),
             handle: this.handle,
         };
     }

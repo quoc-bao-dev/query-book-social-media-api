@@ -67,6 +67,8 @@ paths:
         $ref: './path/user.yaml#/GetMe'
     /users/profile/{id}:
         $ref: './path/user.yaml#/GetUserProfile'
+    /users/suggest:
+        $ref: './path/user.yaml#/GetSuggestions'
     /users/profile:
         $ref: './path/user.yaml#/UpdateUserProfile'
     /users/search:
