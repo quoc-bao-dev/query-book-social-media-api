@@ -178,6 +178,7 @@ class UserProfileDTO {
             lastName: this.lastName,
             fullName: `${this.firstName} ${this.lastName}`,
             handle: this.handle,
+            email: this.email,
             avatar,
             coverPage,
             bio: this.bio,

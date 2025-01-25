@@ -144,7 +144,7 @@ const AuthController = {
     async logout(req: Request, res: Response) {
         const accessToken = req.headers.authorization?.split(' ')[1];
         const { refreshToken } = req.body;
-        const { userId } = decodeToken(accessToken!) as { userId: string };
+        const { userId } = decodeToken(refreshToken!) as { userId: string };
 
         await authService.logout(userId, accessToken!, refreshToken);
 

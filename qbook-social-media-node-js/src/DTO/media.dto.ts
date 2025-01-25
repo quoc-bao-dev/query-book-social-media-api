@@ -19,7 +19,7 @@ class MediaDTO {
 
     toResponse() {
         return {
-            id: this.id,
+            id: this?.id,
             userId: this.userId,
             type: this.type,
             sourceType: this.sourceType,

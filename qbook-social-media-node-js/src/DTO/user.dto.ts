@@ -48,7 +48,9 @@ export class UserDTO {
     }
 
     toResponse() {
-        const avatar = new MediaDTO(this.avatar as MediaDocument).toResponse();
+        const avatar =
+            this.avatar &&
+            new MediaDTO(this.avatar as MediaDocument).toResponse();
         return {
             id: this.id,
             firstName: this.firstName,
