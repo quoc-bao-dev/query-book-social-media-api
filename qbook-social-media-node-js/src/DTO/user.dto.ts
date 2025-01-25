@@ -49,8 +49,7 @@ export class UserDTO {
 
     toResponse() {
         const avatar =
-            this.avatar &&
-            new MediaDTO(this.avatar as MediaDocument).toResponse();
+            this.avatar && new MediaDTO(this.avatar as MediaDocument);
         return {
             id: this.id,
             firstName: this.firstName,
@@ -58,7 +57,8 @@ export class UserDTO {
             fullName: `${this.firstName} ${this.lastName}`,
             username: this.username,
             email: this.email,
-            avatar,
+            avatar: avatar?.toResponse() ?? null,
+            avatarUrl: avatar?.toUrl() ?? null,
             handle: this.handle,
             professional: this.professional,
             friendCount: this.friendCount,

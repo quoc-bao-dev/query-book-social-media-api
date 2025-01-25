@@ -69,7 +69,8 @@ const createJobTitle = async () => {
 };
 const main = async () => {
     // fakeToken(user1);
-    createJobTitle();
+    // createJobTitle();
+    console.log(await hashPassword('Pass1234@@'));
 };
 
 main();

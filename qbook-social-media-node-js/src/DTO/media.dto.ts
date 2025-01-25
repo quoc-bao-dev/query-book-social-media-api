@@ -1,5 +1,6 @@
 import { ObjectId } from 'mongoose';
 import { MediaDocument } from '../models/media.schema';
+import config from '../config/config';
 
 class MediaDTO {
     id: string;
@@ -26,6 +27,13 @@ class MediaDTO {
             url: this.sourceType === 'url' ? this.url : undefined,
             file: this.sourceType === 'file' ? this.file : undefined,
         };
+    }
+    toUrl() {
+        return this.sourceType === 'url'
+            ? this.url
+            : this.sourceType === 'file'
+            ? `${config.IMAGE_SERVER}/${this.file}`
+            : undefined;
     }
 }
 

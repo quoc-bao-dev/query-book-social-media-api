@@ -136,11 +136,10 @@ class UserProfileDTO {
         );
 
         const avatar =
-            this.avatar &&
-            new MediaDTO(this.avatar as MediaDocument).toResponse();
+            this.avatar && new MediaDTO(this.avatar as MediaDocument);
+
         const coverPage =
-            this.coverPage &&
-            new MediaDTO(this.coverPage as MediaDocument).toResponse();
+            this.coverPage && new MediaDTO(this.coverPage as MediaDocument);
 
         const projects = this.projects?.map((_project) => {
             return {
@@ -179,8 +178,10 @@ class UserProfileDTO {
             fullName: `${this.firstName} ${this.lastName}`,
             handle: this.handle,
             email: this.email,
-            avatar,
-            coverPage,
+            avatar: avatar?.toResponse() ?? null,
+            avatarUrl: avatar?.toUrl() ?? null,
+            coverPage: coverPage?.toResponse() ?? null,
+            coverPageUrl: coverPage?.toUrl() ?? null,
             bio: this.bio,
             phone: this.phone,
             professional: this.professional,

@@ -16,6 +16,8 @@ const config = {
     REFRESH_TOKEN_EXPIRES_IN: process.env.REFRESH_TOKEN_EXPIRES_IN as string,
     ACTIVE_ACCOUNT_EXPIRES_IN: process.env.ACTIVE_ACCOUNT_EXPIRES_IN as string,
 
+    IMAGE_SERVER: process.env.IMAGE_SERVER as string,
+
     EMAIL_USER: process.env.EMAIL_USER as string,
     EMAIL_PASS: process.env.EMAIL_PASS as string,
 
