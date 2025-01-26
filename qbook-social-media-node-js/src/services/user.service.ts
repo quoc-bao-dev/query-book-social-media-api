@@ -93,8 +93,6 @@ class UserService {
         }
         await user.populate('avatar');
 
-        console.log(userProfile);
-
         await userProfile.populate('jobTitle');
         await userProfile.populate({
             path: 'friends followers followings coverPage',
