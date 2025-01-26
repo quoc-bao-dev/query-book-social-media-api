@@ -1,5 +1,5 @@
 import { CreateMediaInput, UpdateMediaInput } from '../models/types/media.type';
-import Media from '../models/media.schema';
+import Media, { MediaDocument } from '../models/media.schema';
 import ApiError from '../core/ApiError';
 class MediaService {
     async create(payload: CreateMediaInput) {
@@ -54,6 +54,15 @@ class MediaService {
         }
         //TODO: delete file
         return media;
+    }
+
+    async findMediaById(id: string) {
+        const media = await Media.findById(id);
+        if (!media) {
+            // throw ApiError.notFound('Media not found');
+            return undefined;
+        }
+        return media as MediaDocument;
     }
 }
 

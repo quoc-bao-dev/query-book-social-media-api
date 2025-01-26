@@ -4,6 +4,7 @@ import { MediaDocument } from '../models/media.schema';
 import { RoleType, SocialType } from '../models/types/type';
 import { UserDocument } from '../models/user.schema';
 import { UserProfileDocument } from '../models/userProfile.schema';
+import mediaService from '../services/media.service';
 import MediaDTO from './media.dto';
 
 class UserProfileDTO {
@@ -97,43 +98,30 @@ class UserProfileDTO {
     }
 
     toPublish() {
-        const friends = (this.friends as UserDocument[]).map((friend) => {
-            return {
-                id: friend.id,
-                fullName: `${friend.firstName} ${friend.lastName}`,
-                handle: friend.handle,
-                avatar: friend.avatar,
-                professional: friend.professional,
-                followerCount: friend.followerCount,
-                followingCount: friend.followingCount,
-            };
-        });
-
-        const followers = (this.followers as UserDocument[]).map((follower) => {
-            return {
-                id: follower.id,
-                fullName: `${follower.firstName} ${follower.lastName}`,
-                handle: follower.handle,
-                avatar: follower.avatar,
-                professional: follower.professional,
-                followerCount: follower.followerCount,
-                followingCount: follower.followingCount,
-            };
-        });
-
-        const followings = (this.followings as UserDocument[]).map(
-            (following) => {
+        const mapUserData = (users: UserDocument[]) =>
+            users.map((user) => {
+                const avatar =
+                    user.avatar && new MediaDTO(user.avatar as MediaDocument);
                 return {
-                    id: following.id,
-                    fullName: `${following.firstName} ${following.lastName}`,
-                    handle: following.handle,
-                    avatar: following.avatar,
-                    professional: following.professional,
-                    followerCount: following.followerCount,
-                    followingCount: following.followingCount,
+                    id: user.id,
+                    fullName: `${user.firstName} ${user.lastName}`,
+                    handle: user.handle,
+                    avatar: avatar?.toResponse(),
+                    avatarUrl: avatar?.toUrl(),
+                    professional: user.professional,
+                    followerCount: user.followerCount,
+                    followingCount: user.followingCount,
                 };
-            }
-        );
+            });
+
+        const mapSimpleData = (data: any[], fields: string[]) =>
+            data?.map((item) => {
+                const result: Record<string, any> = {};
+                fields.forEach((field) => {
+                    result[field] = item[field];
+                });
+                return result;
+            });
 
         const avatar =
             this.avatar && new MediaDTO(this.avatar as MediaDocument);
@@ -141,36 +129,6 @@ class UserProfileDTO {
         const coverPage =
             this.coverPage && new MediaDTO(this.coverPage as MediaDocument);
 
-        const projects = this.projects?.map((_project) => {
-            return {
-                projectName: _project.projectName,
-                description: _project.description,
-                startDate: _project.startDate,
-                endDate: _project.endDate,
-                url: _project.url,
-            };
-        });
-
-        const skills = this.skills?.map((_skill) => {
-            return {
-                name: _skill.name,
-                display: _skill.display,
-            };
-        });
-
-        const links = this.links?.map((_link) => {
-            return {
-                title: _link.title,
-                url: _link.url,
-            };
-        });
-
-        const socials = this.socials?.map((_social) => {
-            return {
-                type: _social.type,
-                url: _social.url,
-            };
-        });
         return {
             id: this.userId,
             firstName: this.firstName,
@@ -186,16 +144,30 @@ class UserProfileDTO {
             phone: this.phone,
             professional: this.professional,
             jobTitle: this.jobTitle,
-            socials: socials,
-            links: links,
-            skills: skills,
-            projects: projects,
+            socials: this.socials
+                ? mapSimpleData(this.socials, ['type', 'url'])
+                : [],
+            links: this.links
+                ? mapSimpleData(this.links, ['title', 'url'])
+                : [],
+            skills: this.skills
+                ? mapSimpleData(this.skills, ['name', 'display'])
+                : [],
+            projects: this.projects
+                ? mapSimpleData(this.projects, [
+                      'projectName',
+                      'description',
+                      'startDate',
+                      'endDate',
+                      'url',
+                  ])
+                : [],
             friendCount: this.friendCount,
             followerCount: this.followerCount,
             followingCount: this.followingCount,
-            friends: friends,
-            followers: followers,
-            followings: followings,
+            friends: mapUserData(this.friends as UserDocument[]),
+            followers: mapUserData(this.followers as UserDocument[]),
+            followings: mapUserData(this.followings as UserDocument[]),
             interests: this.interests,
             address: this.address,
             createdAt: this.createdAt,

@@ -91,8 +91,16 @@ class UserService {
         if (!userProfile) {
             throw ApiError.notFound('User profile not found');
         }
+        await user.populate('avatar');
 
-        await userProfile.populate('friends');
+        console.log(userProfile);
+
+        await userProfile.populate('jobTitle');
+        await userProfile.populate({
+            path: 'friends followers followings coverPage',
+            populate: { path: 'avatar' }, // Populate avatar for friends, followers, followings
+        });
+
         const dto = {
             ...user.toObject(),
             ...userProfile.toObject(),
