@@ -4,7 +4,7 @@ import { MediaDocument } from '../models/media.schema';
 import { RoleType, SocialType } from '../models/types/type';
 import { UserDocument } from '../models/user.schema';
 import { UserProfileDocument } from '../models/userProfile.schema';
-import mediaService from '../services/media.service';
+import JobTitleDTO from './jobTitle.dto';
 import MediaDTO from './media.dto';
 
 class UserProfileDTO {
@@ -129,6 +129,9 @@ class UserProfileDTO {
         const coverPage =
             this.coverPage && new MediaDTO(this.coverPage as MediaDocument);
 
+        const jobTitle =
+            this.jobTitle && new JobTitleDTO(this.jobTitle as JobTitleDocument);
+
         return {
             id: this.userId,
             firstName: this.firstName,
@@ -143,7 +146,7 @@ class UserProfileDTO {
             bio: this.bio,
             phone: this.phone,
             professional: this.professional,
-            jobTitle: this.jobTitle,
+            jobTitle: jobTitle?.toResponse(),
             socials: this.socials
                 ? mapSimpleData(this.socials, ['type', 'url'])
                 : [],
