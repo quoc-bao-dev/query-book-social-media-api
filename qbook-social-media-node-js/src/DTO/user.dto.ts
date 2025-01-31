@@ -88,15 +88,20 @@ export class UserDTO {
     }
 
     toUserRequest() {
+        console.log(11111111);
+
         const avatar =
             this.avatar && new MediaDTO(this.avatar as MediaDocument);
+
+        console.log(2222222);
+        console.log(avatar);
 
         return {
             id: this.id,
             fullName: `${this.firstName} ${this.lastName}`,
             username: this.username,
             email: this.email,
-            avatar: avatar.toUrl(),
+            avatar: avatar?.toUrl(),
             handle: this.handle,
         };
     }

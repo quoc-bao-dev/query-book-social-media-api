@@ -9,6 +9,7 @@ import postRouter from './post.routes';
 import storyRouter from './story.routes';
 import userRouter from './user.routes';
 import workExperienceRouter from './workExperience.routes';
+import deployRouter from './deploy.routes';
 
 const router = Router();
 
@@ -22,5 +23,6 @@ router.use('/friends', friendRouter);
 router.use('/follow', followRouter);
 router.use('/job-titles', jobTitleRouter);
 router.use('/work-experiences', workExperienceRouter);
+router.use('/deploy', deployRouter);
 
 export default router;

@@ -93,9 +93,10 @@ class UserService {
         }
         await user.populate('avatar');
 
-        await userProfile.populate('jobTitle');
+        await userProfile.populate('jobTitle coverPage');
+
         await userProfile.populate({
-            path: 'friends followers followings coverPage',
+            path: 'friends followers followings',
             populate: { path: 'avatar' }, // Populate avatar for friends, followers, followings
         });
 

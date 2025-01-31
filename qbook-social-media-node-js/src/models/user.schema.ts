@@ -15,6 +15,7 @@ export interface UserDocument extends Document {
     followerCount: number;
     followingCount: number;
     role: RoleType;
+    accountType: string;
     oauthProvider: string;
     isActive: boolean;
     isTwoFactorAuthEnabled: boolean;
@@ -43,6 +44,11 @@ const UserSchema = new Schema<UserDocument>(
         followerCount: { type: Number, default: 0 },
         followingCount: { type: Number, default: 0 },
         role: { type: String, enum: roles, default: 'user' },
+        accountType: {
+            type: String,
+            enum: ['pro', 'standard'],
+            default: 'standard',
+        },
         oauthProvider: { type: String, trim: true },
         isActive: { type: Boolean, default: false },
         isTwoFactorAuthEnabled: { type: Boolean, default: false },

@@ -1,6 +1,8 @@
 import ApiError from '../core/ApiError';
 import { UserDTO } from '../DTO/user.dto';
 import Friend from '../models/friend.schema';
+import pendingRequestSchema from '../models/pendingRequest.schema';
+import { UserDocument } from '../models/user.schema';
 import pendingRequestService from './pendingRequest.service';
 import userService from './user.service';
 class FriendService {
@@ -26,14 +28,31 @@ class FriendService {
     }
 
     async getPendingRequests(userId: string) {
-        const requests = await pendingRequestService.getPendingRequests(userId);
+        // const requests = await pendingRequestService.getPendingRequests(userId);
 
-        const lsUserRequests = await Promise.all(
-            requests.map((request) =>
-                userService.findUserById(request.senderId.toString())
-            )
+        // const lsUserRequests = await Promise.all(
+        //     requests.map((request) =>
+        //         userService.findUserById(request.senderId.toString())
+        //     )
+        // );
+
+        const lsRequest = await pendingRequestSchema
+            .find({
+                receiverId: userId,
+                status: 'pending',
+            })
+            .populate({
+                path: 'senderId',
+                populate: { path: 'avatar' },
+            });
+
+        const lsUserRequests = lsRequest.map<UserDocument>(
+            (request) => request.senderId as UserDocument
         );
-        return lsUserRequests.map((user) => new UserDTO(user).toUserRequest());
+
+        return lsUserRequests.map((user: UserDocument) =>
+            new UserDTO(user).toUserRequest()
+        );
     }
     async sendRequest(userId: string, targetId: string) {
         const request = await pendingRequestService.createRequest(

@@ -9,6 +9,7 @@ class PendingRequestService {
             receiverId: userId,
             status: 'pending',
         });
+
         return requests;
     }
     async createRequest(userId: string, targetId: string) {

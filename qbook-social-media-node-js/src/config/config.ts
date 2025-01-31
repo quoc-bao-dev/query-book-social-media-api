@@ -18,6 +18,9 @@ const config = {
 
     IMAGE_SERVER: process.env.IMAGE_SERVER as string,
 
+    DEPLOY_SERVER: process.env.DEPLOY_SERVER as string,
+    DEPLOY_API_KEY: process.env.DEPLOY_API_KEY as string,
+
     EMAIL_USER: process.env.EMAIL_USER as string,
     EMAIL_PASS: process.env.EMAIL_PASS as string,
 

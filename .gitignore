@@ -11,8 +11,6 @@
 .env.*.local
 
 # Ignore lock files
-package-lock.json
-yarn.lock
 
 # Ignore logs
 logs
@@ -25,3 +23,6 @@ yarn-error.log*
 *.local
 
 */public/uploads
+
+/deploy-server/src/public
+/deploy-server/src/uploads
