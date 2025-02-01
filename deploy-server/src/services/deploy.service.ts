@@ -1,4 +1,5 @@
 import deploymentsSchema from '../schema/deployments.schema';
+import { getUrl } from '../utils';
 
 class DeployService {
     async getDeployByUserId(userId: string) {
@@ -6,7 +7,15 @@ class DeployService {
             userId,
         });
 
-        return deploys;
+        const deployments = deploys.map((deploy) => {
+            return {
+                userId: deploy.userId,
+                subdomain: deploy.subdomain,
+                url: getUrl(deploy.subdomain),
+            };
+        });
+
+        return deployments;
     }
 
     async getDeployBySubDomain(subDomain: string) {
@@ -21,6 +30,13 @@ class DeployService {
         const deploy = new deploymentsSchema(payload);
         const result = await deploy.save();
         return result;
+    }
+
+    async delete(payload: any) {
+        const subDomain = payload.subDomain;
+
+        await deploymentsSchema.deleteOne({ subdomain: subDomain });
+        return true;
     }
 }
 
