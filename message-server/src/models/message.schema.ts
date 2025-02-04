@@ -8,12 +8,13 @@ export interface MessageDocument extends Document {
     updatedAt: Date;
 }
 
-const MessageSchema = new Schema<MessageDocument>({
-    senderId: { type: String, required: true },
-    roomChatId: { type: String, required: true },
-    content: { type: String, required: true },
-    createdAt: { type: Date, default: Date.now() },
-    updatedAt: { type: Date, default: Date.now() },
-});
+const MessageSchema = new Schema<MessageDocument>(
+    {
+        senderId: { type: String, required: true },
+        roomChatId: { type: String, required: true },
+        content: { type: String, required: true },
+    },
+    { timestamps: true }
+);
 
 export default MessageSchema;
