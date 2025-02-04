@@ -107,13 +107,16 @@ class PostService {
             .skip(skip)
             .limit(limit);
 
+        const lsResult = await Promise.all(
+            lsPost.map(async (item) => await new PostDTO(item).toResponse())
+        );
         return {
             pagination: {
                 page: page,
                 limit: limit,
                 total: await Post.countDocuments(conditionSearch),
             },
-            data: lsPost.map((item) => new PostDTO(item).toResponse()),
+            data: lsResult,
         };
     }
 

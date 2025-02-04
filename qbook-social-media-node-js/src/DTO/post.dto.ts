@@ -5,6 +5,7 @@ import { PostDocument } from '../models/post.schema';
 import { UserDocument } from '../models/user.schema';
 import { LikeDocument } from '../models/like.schema';
 import { CommentDocument } from '../models/comment.schema';
+import MediaDTO from './media.dto';
 
 class PostDTO {
     id: string;
@@ -37,7 +38,7 @@ class PostDTO {
         this.updatedAt = payload.updatedAt;
     }
 
-    toResponse() {
+    async toResponse() {
         const user = this.userId as UserDocument;
         const hashTags = (this.hashTags as HashtagDocument[]).map(
             (item) => item.name
@@ -49,6 +50,14 @@ class PostDTO {
             type: item.type,
             sourceType: item.sourceType,
         }));
+
+        const mediaUrls =
+            this.media &&
+            (await Promise.all(
+                this.media.map(async (item) => {
+                    return new MediaDTO(item as MediaDocument).toUrl();
+                })
+            ));
 
         const likes = (this.likes as LikeDocument[]).map((item) => {
             const user = item.userId as UserDocument;
@@ -95,6 +104,7 @@ class PostDTO {
             comments: comments,
             hashTags: hashTags,
             media: media,
+            mediaUrls,
             status: this.status,
             createdAt: this.createdAt,
             updatedAt: this.updatedAt,
