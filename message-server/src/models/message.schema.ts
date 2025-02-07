@@ -1,4 +1,4 @@
-import { Document, Schema } from 'mongoose';
+import { Document, model, Schema } from 'mongoose';
 
 export interface MessageDocument extends Document {
     senderId: string;
@@ -17,4 +17,4 @@ const MessageSchema = new Schema<MessageDocument>(
     { timestamps: true }
 );
 
-export default MessageSchema;
+export default model('Message', MessageSchema);

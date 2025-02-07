@@ -1,9 +1,8 @@
+import fs from 'fs';
 import mongoose from 'mongoose';
 import app from './app';
 import config from './config/config';
 import redis from './libs/redis';
-import fs from 'fs';
-import https from 'https';
 
 // Đọc chứng chỉ SSL
 const privateKey = fs.readFileSync('certs/localhost-key.pem', 'utf8');

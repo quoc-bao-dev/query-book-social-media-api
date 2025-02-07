@@ -1,24 +1,31 @@
 import { Server, Socket } from 'socket.io';
-import { addUser, removeUser } from '../store/user';
+import { addUser } from '../store/user';
 import chatHandler from './chat.socket';
 
 const initializeSocket = (io: Server) => {
     io.on('connection', (socket: Socket) => {
-        console.log(`User connected: ${socket.id}`);
-
-        const userId = socket.handshake.query.userId as string;
         const roomId = socket.id;
-        if (userId) {
-            addUser(userId, roomId);
-            socket.join(roomId);
+        const userId = socket.handshake.query.userId as string;
+
+        if (!userId) {
+            socket.emit('error', 'User ID is required');
+            socket.disconnect();
+            return;
         }
 
+        if (!roomId) {
+            socket.emit('error', 'Room ID is required');
+            socket.disconnect();
+            return;
+        }
+
+        addUser(userId, roomId);
+        socket.join(roomId);
+        console.log(`✅ [${userId}] joined room ${roomId}`);
+
         socket.on('disconnect', () => {
-            console.log(`User disconnected: ${socket.id}`);
-            if (userId) {
-                removeUser(userId, roomId);
-                socket.leave(roomId);
-            }
+            console.log(`❌ [${userId}] left room ${roomId}`);
+            socket.leave(roomId);
         });
 
         chatHandler(socket, io);

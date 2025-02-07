@@ -1,18 +1,31 @@
 import { Server, Socket } from 'socket.io';
 import { getUser } from '../store/user';
+import chatService from '../service/chat.service';
 
 const chatHandler = (socket: Socket, io: Server) => {
-    socket.on('send_message', (data) => {
+    socket.on('send_message', async (data) => {
         //TODO: save massage to database
-        console.log(data);
+
+        const payload = {
+            senderId: data.senderId,
+            roomChatId: data.groupId,
+            content: data.message,
+        };
+
+        await chatService.createMessage(payload);
+
         const lsRoomId = data.members
             .map((id) => getUser(id))
             .flatMap((set) => [...set]);
-        console.log(lsRoomId);
 
-        lsRoomId.forEach((roomId) => {
-            io.to(roomId).emit('receive_message', data);
-        });
+        io.to(lsRoomId).emit('receive_message', data);
+    });
+    socket.on('typing', (data) => {
+        const lsRoomId = data.members
+            .map((id) => getUser(id))
+            .flatMap((set) => [...set]);
+
+        io.to(lsRoomId).emit('typing', data);
     });
 };
 export default chatHandler;
