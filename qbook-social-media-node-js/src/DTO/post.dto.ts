@@ -102,8 +102,12 @@ class PostDTO {
                         avtMedia as MediaDocument
                     ).toUrl()!;
                 }
+
+                let mediaUrl = '';
                 const media = item.media as MediaDocument;
-                const mediaUrl = new MediaDTO(media).toUrl();
+                if (item.media) {
+                    mediaUrl = new MediaDTO(media).toUrl()!;
+                }
                 return {
                     id: item.id,
                     username: user.username,
