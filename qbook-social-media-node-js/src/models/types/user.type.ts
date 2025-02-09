@@ -17,19 +17,19 @@ export type UpdateUserBody = {
     phone?: string;
     coverPage?: CreateMediaBody;
     jobTitle?: string;
-    socials: {
+    socials?: {
         type: SocialType;
         url: string;
     }[];
-    links: {
+    links?: {
         title: string;
         url: string;
     }[];
-    skills: {
+    skills?: {
         name: string;
         display: string;
     }[];
-    projects: {
+    projects?: {
         projectName: string;
         description: string;
         startDate: Date;

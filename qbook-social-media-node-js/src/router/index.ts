@@ -10,6 +10,7 @@ import storyRouter from './story.routes';
 import userRouter from './user.routes';
 import workExperienceRouter from './workExperience.routes';
 import deployRouter from './deploy.routes';
+import paymentRouter from './payment.routes';
 
 const router = Router();
 
@@ -24,5 +25,6 @@ router.use('/follow', followRouter);
 router.use('/job-titles', jobTitleRouter);
 router.use('/work-experiences', workExperienceRouter);
 router.use('/deploy', deployRouter);
+router.use('/payment/', paymentRouter);
 
 export default router;

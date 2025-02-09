@@ -33,9 +33,3 @@ app.listen(config.PORT, () => {
         `Server running on port ${config.PORT}, http://localhost:${config.PORT}`
     );
 });
-
-// https.createServer(credentials, app).listen(config.PORT, () => {
-//     console.log(
-//         `Server running on port ${config.PORT}, https://localhost:${config.PORT}`
-//     );
-// });

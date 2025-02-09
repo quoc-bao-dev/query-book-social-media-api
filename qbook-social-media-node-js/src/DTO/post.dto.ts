@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongoose';
 import { HashtagDocument } from '../models/hashtag.schema';
-import { MediaDocument } from '../models/media.schema';
+import mediaSchema, { MediaDocument } from '../models/media.schema';
 import { PostDocument } from '../models/post.schema';
 import { UserDocument } from '../models/user.schema';
 import { LikeDocument } from '../models/like.schema';
@@ -90,12 +90,19 @@ class PostDTO {
             };
         });
 
+        const avatarMedia = await mediaSchema.findById(user.avatar);
+
+        const avatarUrl =
+            user.avatar && avatarMedia && new MediaDTO(avatarMedia).toUrl();
+
         return {
             id: this.id,
             author: {
                 name: user.username,
+                fullName: `${user.firstName} ${user.lastName}`,
                 email: user.email,
                 avatar: user.avatar,
+                avatarUrl,
             },
             content: this.content,
             likesCount: this.likes.length,

@@ -1,14 +1,12 @@
+import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express from 'express';
 import morgan from 'morgan';
+import config from './config/config';
 import { errorHandler } from './core';
 import logMiddleware from './middlewares/logger.middleware';
 import { setupSwagger } from './openapi/swaggerConfig';
 import router from './router';
-import cookieParser from 'cookie-parser';
-import fakeUser from './factory/fakeUser';
-import fakePost from './factory/fakePost';
-import config from './config/config';
 
 const app = express();
 app.use(morgan('dev'));
@@ -40,13 +38,6 @@ setupSwagger(app);
 
 app.use('/api/v1/', router);
 
-// fakeUser();
-// fakePost({
-//     userId: '676e7a3017c3b35dcced3084',
-//     quantity: 10,
-//     status: 'private',
-//     hashTags: ['react', 'angular'],
-// });
 app.use(errorHandler);
 
 export default app;

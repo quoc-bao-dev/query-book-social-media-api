@@ -25,6 +25,8 @@ const config = {
     EMAIL_PASS: process.env.EMAIL_PASS as string,
 
     CORS_ALLOWED_ORIGINS: process.env.CORS_ALLOWED_ORIGINS as string,
+
+    STRIPE_PAYMENT_SECRET_KEY: process.env.STRIPE_PAYMENT_SECRET_KEY as string,
 };
 
 if (!config.MONGO_URL) {
