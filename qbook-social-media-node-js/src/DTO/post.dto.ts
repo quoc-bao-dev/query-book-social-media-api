@@ -73,6 +73,7 @@ class PostDTO {
                     avatarMedia as MediaDocument
                 ).toUrl();
                 return {
+                    id: user.id,
                     name: `${user.firstName} ${user.lastName}`,
                     avatar: user.avatar,
                     avatarUrl,
