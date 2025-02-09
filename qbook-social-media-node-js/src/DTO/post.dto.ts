@@ -7,6 +7,7 @@ import { PostDocument } from '../models/post.schema';
 import { UserDocument } from '../models/user.schema';
 import userService from '../services/user.service';
 import MediaDTO from './media.dto';
+import { ne } from '@faker-js/faker/.';
 
 class PostDTO {
     id: string;
@@ -102,6 +103,7 @@ class PostDTO {
                     ).toUrl()!;
                 }
                 const media = item.media as MediaDocument;
+                const mediaUrl = new MediaDTO(media).toUrl();
                 return {
                     id: item.id,
                     username: user.username,
@@ -117,6 +119,7 @@ class PostDTO {
                         type: media.type,
                         sourceType: media.sourceType,
                     },
+                    mediaUrl,
                     createdAt: item.createdAt,
                     updatedAt: item.updatedAt,
                 };
