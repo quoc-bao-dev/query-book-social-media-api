@@ -93,10 +93,20 @@ class PostDTO {
 
                 console.log('[comments]', item);
 
+                let avatarUrl = '';
+
+                if (user.avatar) {
+                    const avtMedia = await mediaSchema.findById(user.avatar);
+                    avatarUrl = new MediaDTO(
+                        avtMedia as MediaDocument
+                    ).toUrl()!;
+                }
                 const media = item.media as MediaDocument;
                 return {
                     id: item.id,
                     username: user.username,
+                    fullName: `${user.firstName} ${user.lastName}`,
+                    avatarUrl,
                     avatar: user.avatar,
                     content: item.content,
                     likes: item.likes,
