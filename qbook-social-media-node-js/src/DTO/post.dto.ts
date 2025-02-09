@@ -24,8 +24,6 @@ class PostDTO {
     updatedAt: Date;
 
     constructor(payload: PostDocument) {
-        console.log('[payload]: ', payload.likes);
-
         this.id = payload.id;
         this.userId = payload.userId;
         this.content = payload.content;
@@ -85,28 +83,35 @@ class PostDTO {
                 };
             })
         );
+        console.log('comment', this.comments);
 
-        const comments = (this.comments as CommentDocument[]).map((item) => {
-            const user = item.userId as UserDocument;
+        const comments = await Promise.all(
+            (this.comments as CommentDocument[]).map(async (item) => {
+                const user = await userService.findUserById(
+                    item.userId.toString()
+                );
 
-            const media = item.media as MediaDocument;
-            return {
-                id: item.id,
-                username: user.username,
-                avatar: user.avatar,
-                content: item.content,
-                likes: item.likes,
-                replies: item.replies,
-                media: media && {
-                    url: media.url,
-                    file: media.file,
-                    type: media.type,
-                    sourceType: media.sourceType,
-                },
-                createdAt: item.createdAt,
-                updatedAt: item.updatedAt,
-            };
-        });
+                console.log('[comments]', item);
+
+                const media = item.media as MediaDocument;
+                return {
+                    id: item.id,
+                    username: user.username,
+                    avatar: user.avatar,
+                    content: item.content,
+                    likes: item.likes,
+                    replies: item.replies,
+                    media: media && {
+                        url: media.url,
+                        file: media.file,
+                        type: media.type,
+                        sourceType: media.sourceType,
+                    },
+                    createdAt: item.createdAt,
+                    updatedAt: item.updatedAt,
+                };
+            })
+        );
 
         const avatarMedia = await mediaSchema.findById(user.avatar);
 

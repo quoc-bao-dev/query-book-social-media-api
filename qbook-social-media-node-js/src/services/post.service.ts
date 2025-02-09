@@ -49,7 +49,9 @@ class PostService {
 
         const post = await Post.create(postPayload);
 
-        const newPost = await post.populate('hashTags media userId likes');
+        const newPost = await post.populate(
+            'hashTags media userId likes comments'
+        );
         return new PostDTO(newPost).toResponse();
     }
 
@@ -102,7 +104,7 @@ class PostService {
         }
 
         const lsPost = await Post.find(conditionSearch)
-            .populate('hashTags media userId likes')
+            .populate('hashTags media userId likes comments')
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit);
