@@ -104,10 +104,18 @@ class PostDTO {
                 }
 
                 let mediaUrl = '';
-                const media = item.media as MediaDocument;
+
+                const media = (await mediaSchema.findById(
+                    item.media
+                )) as MediaDocument;
+
                 if (item.media) {
                     mediaUrl = new MediaDTO(media).toUrl()!;
                 }
+
+                console.log('[media]', media);
+                console.log('[media url]', mediaUrl);
+
                 return {
                     id: item.id,
                     username: user.username,
