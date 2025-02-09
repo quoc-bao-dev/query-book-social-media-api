@@ -1,13 +1,12 @@
 import { ObjectId } from 'mongoose';
+import { CommentDocument } from '../models/comment.schema';
 import { HashtagDocument } from '../models/hashtag.schema';
+import { LikeDocument } from '../models/like.schema';
 import mediaSchema, { MediaDocument } from '../models/media.schema';
 import { PostDocument } from '../models/post.schema';
 import { UserDocument } from '../models/user.schema';
-import { LikeDocument } from '../models/like.schema';
-import { CommentDocument } from '../models/comment.schema';
-import MediaDTO from './media.dto';
 import userService from '../services/user.service';
-import mediaService from '../services/media.service';
+import MediaDTO from './media.dto';
 
 class PostDTO {
     id: string;
@@ -68,12 +67,17 @@ class PostDTO {
                 const user = await userService.findUserById(
                     item.userId.toString()
                 );
-                const avatarMedia = await mediaSchema.findById(user.avatar);
-                const avatarUrl = new MediaDTO(
-                    avatarMedia as MediaDocument
-                ).toUrl();
+
+                let avatarUrl = '';
+                if (user?.avatar) {
+                    const avatarMedia = await mediaSchema.findById(user.avatar);
+                    avatarUrl = new MediaDTO(
+                        avatarMedia as MediaDocument
+                    ).toUrl()!;
+                }
+
                 return {
-                    id: user.id,
+                    id: user._id,
                     name: `${user.firstName} ${user.lastName}`,
                     avatar: user.avatar,
                     avatarUrl,
