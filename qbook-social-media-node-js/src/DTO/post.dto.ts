@@ -6,6 +6,8 @@ import { UserDocument } from '../models/user.schema';
 import { LikeDocument } from '../models/like.schema';
 import { CommentDocument } from '../models/comment.schema';
 import MediaDTO from './media.dto';
+import userService from '../services/user.service';
+import mediaService from '../services/media.service';
 
 class PostDTO {
     id: string;
@@ -23,6 +25,8 @@ class PostDTO {
     updatedAt: Date;
 
     constructor(payload: PostDocument) {
+        console.log('[payload]: ', payload.likes);
+
         this.id = payload.id;
         this.userId = payload.userId;
         this.content = payload.content;
@@ -59,14 +63,23 @@ class PostDTO {
                 })
             ));
 
-        const likes = (this.likes as LikeDocument[]).map((item) => {
-            const user = item.userId as UserDocument;
-            return {
-                name: user.username,
-                avatar: user.avatar,
-                handle: user.handle,
-            };
-        });
+        const likes = await Promise.all(
+            (this.likes as LikeDocument[]).map(async (item) => {
+                const user = await userService.findUserById(
+                    item.userId.toString()
+                );
+                const avatarMedia = await mediaSchema.findById(user.avatar);
+                const avatarUrl = new MediaDTO(
+                    avatarMedia as MediaDocument
+                ).toUrl();
+                return {
+                    name: `${user.firstName} ${user.lastName}`,
+                    avatar: user.avatar,
+                    avatarUrl,
+                    handle: user.handle,
+                };
+            })
+        );
 
         const comments = (this.comments as CommentDocument[]).map((item) => {
             const user = item.userId as UserDocument;
