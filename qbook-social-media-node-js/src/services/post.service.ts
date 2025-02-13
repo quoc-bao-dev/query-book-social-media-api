@@ -140,14 +140,9 @@ class PostService {
     }
 
     async getPostByUserId(userId: string) {
-        const post = await Post.find({ userId }).populate([
-            'hashTags',
-            'media',
-            'userId',
-            'likes.userId',
-            'comments.userId',
-            'comments.media',
-        ]);
+        const post = await Post.find({ userId }).populate(
+            'hashTags media userId likes comments'
+        );
 
         if (!post) {
             throw ApiError.notFound('Post not found');
@@ -156,7 +151,6 @@ class PostService {
         const result = await Promise.all(
             post.map((p) => new PostDTO(p).toResponse())
         );
-        console.log(result);
 
         return result;
     }
