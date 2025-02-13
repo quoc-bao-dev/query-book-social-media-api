@@ -141,7 +141,7 @@ class PostService {
 
     async getPostByUserId(userId: string) {
         const post = await Post.find({ userId })
-            .sort({ createAt: 1 })
+            .sort({ createdAt: -1 })
             .populate('hashTags media userId likes comments');
 
         if (!post) {
