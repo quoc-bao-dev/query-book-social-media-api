@@ -140,9 +140,9 @@ class PostService {
     }
 
     async getPostByUserId(userId: string) {
-        const post = await Post.find({ userId }).populate(
-            'hashTags media userId likes comments'
-        );
+        const post = await Post.find({ userId })
+            .sort({ createAt: -1 })
+            .populate('hashTags media userId likes comments');
 
         if (!post) {
             throw ApiError.notFound('Post not found');
