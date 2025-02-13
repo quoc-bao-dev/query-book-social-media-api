@@ -139,6 +139,28 @@ class PostService {
         return new PostDTO(populatedPost).toResponse();
     }
 
+    async getPostByUserId(userId: string) {
+        const post = await Post.find({ userId }).populate([
+            'hashTags',
+            'media',
+            'userId',
+            'likes.userId',
+            'comments.userId',
+            'comments.media',
+        ]);
+
+        if (!post) {
+            throw ApiError.notFound('Post not found');
+        }
+
+        const result = await Promise.all(
+            post.map((p) => new PostDTO(p).toResponse())
+        );
+        console.log(result);
+
+        return result;
+    }
+
     async updatePost(id: string, userId: string, payload: UpdatePostInput) {
         const post = await this.findPostById(id);
         const user = await userService.findUserProfileById(userId);

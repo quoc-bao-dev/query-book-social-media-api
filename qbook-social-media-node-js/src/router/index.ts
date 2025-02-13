@@ -11,6 +11,7 @@ import userRouter from './user.routes';
 import workExperienceRouter from './workExperience.routes';
 import deployRouter from './deploy.routes';
 import paymentRouter from './payment.routes';
+import topicRouter from './topic.routes';
 
 const router = Router();
 
@@ -24,6 +25,8 @@ router.use('/friends', friendRouter);
 router.use('/follow', followRouter);
 router.use('/job-titles', jobTitleRouter);
 router.use('/work-experiences', workExperienceRouter);
+router.use('/topics', topicRouter);
+
 router.use('/deploy', deployRouter);
 router.use('/payment/', paymentRouter);
 

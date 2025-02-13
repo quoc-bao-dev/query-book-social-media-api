@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongoose';
+import { MediaDocument } from '../models/media.schema';
 import { RoleType } from '../models/types/type';
 import { UserDocument } from '../models/user.schema';
-import { MediaDocument } from '../models/media.schema';
 import MediaDTO from './media.dto';
 
 export class UserDTO {
@@ -88,13 +88,8 @@ export class UserDTO {
     }
 
     toUserRequest() {
-        console.log(11111111);
-
         const avatar =
             this.avatar && new MediaDTO(this.avatar as MediaDocument);
-
-        console.log(2222222);
-        console.log(avatar);
 
         return {
             id: this.id,

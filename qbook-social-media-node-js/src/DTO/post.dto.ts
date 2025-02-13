@@ -7,7 +7,6 @@ import { PostDocument } from '../models/post.schema';
 import { UserDocument } from '../models/user.schema';
 import userService from '../services/user.service';
 import MediaDTO from './media.dto';
-import { ne } from '@faker-js/faker/.';
 
 class PostDTO {
     id: string;
@@ -25,6 +24,8 @@ class PostDTO {
     updatedAt: Date;
 
     constructor(payload: PostDocument) {
+        console.log(4444);
+
         this.id = payload.id;
         this.userId = payload.userId;
         this.content = payload.content;
@@ -84,7 +85,6 @@ class PostDTO {
                 };
             })
         );
-        console.log('comment', this.comments);
 
         const comments = await Promise.all(
             (this.comments as CommentDocument[]).map(async (item) => {
@@ -112,9 +112,6 @@ class PostDTO {
                 if (item.media) {
                     mediaUrl = new MediaDTO(media).toUrl()!;
                 }
-
-                console.log('[media]', media);
-                console.log('[media url]', mediaUrl);
 
                 return {
                     id: item.id,

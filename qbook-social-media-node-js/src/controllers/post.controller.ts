@@ -1,12 +1,11 @@
 import { Request, Response } from 'express';
-import { CreatePostBody, UpdatePostBody } from '../models/types/post.type';
-import postService from '../services/post.service';
-import ApiError from '../core/ApiError';
 import { createPaginationResponse, createResponse } from '../core';
-import likeService from '../services/like.service';
-import commentService from '../services/comment.service';
+import ApiError from '../core/ApiError';
 import { CreateCommentBody } from '../models/types/comment.type';
-import { update } from 'lodash';
+import { CreatePostBody, UpdatePostBody } from '../models/types/post.type';
+import commentService from '../services/comment.service';
+import likeService from '../services/like.service';
+import postService from '../services/post.service';
 
 const PostController = {
     async create(req: Request, res: Response) {
@@ -58,6 +57,17 @@ const PostController = {
             status: 200,
             message: 'Get post successful',
             data: post,
+        });
+        res.status(response.status).json(response);
+    },
+
+    async getPostByUserId(req: Request, res: Response) {
+        const { userId } = req.params;
+        const posts = await postService.getPostByUserId(userId);
+        const response = createResponse({
+            message: 'get post successful',
+            status: 200,
+            data: posts,
         });
         res.status(response.status).json(response);
     },
