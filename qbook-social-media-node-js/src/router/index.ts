@@ -12,6 +12,7 @@ import workExperienceRouter from './workExperience.routes';
 import deployRouter from './deploy.routes';
 import paymentRouter from './payment.routes';
 import topicRouter from './topic.routes';
+import questionRouter from './question.routes';
 
 const router = Router();
 
@@ -26,6 +27,7 @@ router.use('/follow', followRouter);
 router.use('/job-titles', jobTitleRouter);
 router.use('/work-experiences', workExperienceRouter);
 router.use('/topics', topicRouter);
+router.use('/questions', questionRouter);
 
 router.use('/deploy', deployRouter);
 router.use('/payment/', paymentRouter);
