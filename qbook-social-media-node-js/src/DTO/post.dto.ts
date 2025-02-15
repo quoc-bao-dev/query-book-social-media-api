@@ -24,8 +24,6 @@ class PostDTO {
     updatedAt: Date;
 
     constructor(payload: PostDocument) {
-        console.log(4444);
-
         this.id = payload.id;
         this.userId = payload.userId;
         this.content = payload.content;
@@ -91,8 +89,6 @@ class PostDTO {
                 const user = await userService.findUserById(
                     item.userId.toString()
                 );
-
-                console.log('[comments]', item);
 
                 let avatarUrl = '';
 

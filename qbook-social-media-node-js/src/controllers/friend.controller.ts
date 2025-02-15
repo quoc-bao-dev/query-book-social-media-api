@@ -22,6 +22,7 @@ const FriendController = {
             message: 'Get requests successful',
             data: requests,
         });
+
         res.status(response.status).json(response);
     },
     sendRequest: async (req: Request, res: Response) => {
@@ -34,6 +35,7 @@ const FriendController = {
             message: 'Send request successful',
             data: request,
         });
+
         res.status(response.status).json(response);
     },
 

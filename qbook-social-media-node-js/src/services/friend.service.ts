@@ -3,6 +3,7 @@ import { UserDTO } from '../DTO/user.dto';
 import Friend from '../models/friend.schema';
 import pendingRequestSchema from '../models/pendingRequest.schema';
 import { UserDocument } from '../models/user.schema';
+import { friendSocket } from '../socket/friend';
 import pendingRequestService from './pendingRequest.service';
 import userService from './user.service';
 class FriendService {
@@ -59,9 +60,14 @@ class FriendService {
             userId,
             targetId
         );
+
         if (!request) {
             throw ApiError.conflict('Pending request already exists');
         }
+
+        const targetUser = await userService.findUserById(targetId);
+        friendSocket(targetId).sendRequest(targetUser);
+
         return request;
     }
 
@@ -100,6 +106,9 @@ class FriendService {
 
         await userService.addFriend(userId, senderId);
         await userService.addFriend(senderId, userId);
+
+        const targetUser = await userService.findUserById(userId);
+        friendSocket(senderId).acceptRequest(targetUser);
 
         return relation;
     }
