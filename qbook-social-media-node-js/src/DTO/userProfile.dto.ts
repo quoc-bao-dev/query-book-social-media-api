@@ -103,7 +103,7 @@ class UserProfileDTO {
                 const avatar =
                     user.avatar && new MediaDTO(user.avatar as MediaDocument);
                 return {
-                    id: user.id,
+                    id: user._id,
                     fullName: `${user.firstName} ${user.lastName}`,
                     handle: user.handle,
                     avatar: avatar?.toResponse(),
