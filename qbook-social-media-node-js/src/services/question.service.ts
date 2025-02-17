@@ -17,7 +17,7 @@ class QuestionService {
     }
 
     async getAll() {
-        const questions = await questionSchema.find();
+        const questions = await questionSchema.find().populate('hashtags');
 
         const result = questions;
 
