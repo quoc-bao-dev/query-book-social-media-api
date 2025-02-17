@@ -1,3 +1,4 @@
+import { Schema } from 'mongoose';
 import questionSchema from '../models/question.schema';
 import hashTagService from './hashTag.service';
 
@@ -7,7 +8,7 @@ class QuestionService {
             payload.hashtags.map((item: string) => hashTagService.create(item))
         );
 
-        payload.hashtags = hashtags.map((item) => item._id);
+        payload.hashtags = hashtags.map((item) => item._id.toString());
 
         const question = await questionSchema.create(payload);
 
@@ -17,15 +18,22 @@ class QuestionService {
     }
 
     async getAll() {
-        const questions = await questionSchema.find().populate('hashtags');
+        const questions = await questionSchema
+            .find()
+            .populate('hashtags')
+            .exec();
 
         const result = questions;
+        console.log('[result]', result);
 
-        return result;
+        return questions;
     }
 
     async getByUserId(userId: string) {
-        const questions = await questionSchema.find({ userId });
+        const questions = await questionSchema
+            .find({ userId })
+            .populate('hashtags')
+            .exec();
 
         const result = questions;
 
