@@ -10,6 +10,7 @@ const QuestionController = {
             question,
             code: { fileType, code },
             image,
+            hashtags,
         } = req.body;
         const userId = req.userId;
 
@@ -23,6 +24,7 @@ const QuestionController = {
                 code,
             },
             image,
+            hashtags,
         };
 
         const data = await questionService.create(payload);

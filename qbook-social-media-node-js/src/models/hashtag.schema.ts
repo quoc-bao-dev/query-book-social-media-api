@@ -10,7 +10,7 @@ export interface HashtagDocument extends Document {
 const HashtagSchema = new Schema<HashtagDocument>(
     {
         name: { type: String, required: true, unique: true, trim: true },
-        usageCount: { type: Number, default: 0 },
+        usageCount: { type: Number, default: 1 },
     },
     { timestamps: true }
 );

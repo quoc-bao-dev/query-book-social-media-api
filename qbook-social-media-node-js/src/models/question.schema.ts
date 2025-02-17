@@ -8,6 +8,7 @@ export interface QuestionDocument extends Document {
     code: { fileType: string; code: string };
     image: string;
     vote: ObjectId[];
+    hashtags: ObjectId[];
 }
 
 const QuestionSchema = new Schema<QuestionDocument>(
@@ -31,6 +32,7 @@ const QuestionSchema = new Schema<QuestionDocument>(
             code: String,
         },
         image: { type: String },
+        hashtags: [{ type: Schema.ObjectId, ref: 'Hashtag' }],
         vote: [{ type: Schema.ObjectId, ref: 'User' }],
     },
     { timestamps: true }

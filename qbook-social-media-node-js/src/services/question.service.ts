@@ -1,7 +1,14 @@
 import questionSchema from '../models/question.schema';
+import hashTagService from './hashTag.service';
 
 class QuestionService {
     async create(payload: any) {
+        const hashtags = await Promise.all(
+            payload.hashtags.map((item: string) => hashTagService.create(item))
+        );
+
+        payload.hashtags = hashtags.map((item) => item._id);
+
         const question = await questionSchema.create(payload);
 
         const result = question;
