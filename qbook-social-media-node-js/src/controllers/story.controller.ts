@@ -6,6 +6,7 @@ import storyService from '../services/story.service';
 const StoryController = {
     async getStories(req: Request, res: Response) {
         const userId = req.userId;
+
         const stories = await storyService.getStories(userId!);
         const response = createResponse({
             status: 200,

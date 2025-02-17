@@ -143,7 +143,10 @@ export const userIdMiddleware = (
     res: Response,
     next: NextFunction
 ) => {
-    const accessToken = req.headers.authorization?.split(' ')[1];
+    const cookieAccessToken = req.cookies;
+    const accessToken =
+        cookieAccessToken?.accessToken ??
+        req.headers.authorization?.split(' ')[1];
 
     if (!accessToken) {
         next();
@@ -155,6 +158,7 @@ export const userIdMiddleware = (
             userId: string;
         };
         req.userId = tokenPayload.userId;
+
         next();
     } catch (error) {
         next();
