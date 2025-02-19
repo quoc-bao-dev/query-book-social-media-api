@@ -33,7 +33,7 @@ class QuestionService {
             .skip((page - 1) * limit)
             .populate({
                 path: 'userId',
-                select: 'name email avatar', // Chỉ lấy các trường cần thiết
+                select: 'name email avatar firstName lastName', // Chỉ lấy các trường cần thiết
                 populate: {
                     path: 'avatar', // Populate avatar từ bảng Media
                 },
