@@ -37,6 +37,17 @@ const QuestionController = {
         res.status(response.status).json(response);
     },
 
+    getAll: async (req: Request, res: Response) => {
+        const result = await questionService.getAll();
+        const response = createResponse({
+            status: 200,
+            message: 'get all question successful!',
+            data: result,
+        });
+
+        res.status(response.status).json(response);
+    },
+
     getByUserId: async (req: Request, res: Response) => {
         const userId = req.userId;
 

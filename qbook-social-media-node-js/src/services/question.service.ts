@@ -1,4 +1,3 @@
-import { Schema } from 'mongoose';
 import questionSchema from '../models/question.schema';
 import hashTagService from './hashTag.service';
 
