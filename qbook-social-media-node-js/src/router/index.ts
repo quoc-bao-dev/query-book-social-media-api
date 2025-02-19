@@ -13,6 +13,7 @@ import deployRouter from './deploy.routes';
 import paymentRouter from './payment.routes';
 import topicRouter from './topic.routes';
 import questionRouter from './question.routes';
+import notificationRouter from './notificaton.routes';
 
 const router = Router();
 
@@ -28,6 +29,7 @@ router.use('/job-titles', jobTitleRouter);
 router.use('/work-experiences', workExperienceRouter);
 router.use('/topics', topicRouter);
 router.use('/questions', questionRouter);
+router.use('/notify', notificationRouter);
 
 router.use('/deploy', deployRouter);
 router.use('/payment/', paymentRouter);

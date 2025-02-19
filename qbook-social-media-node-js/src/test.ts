@@ -3,6 +3,7 @@ import jobTitleService from './services/jobTitle.service';
 import { hashPassword } from './utils/bcrypt.utils';
 import config from './config/config';
 import fakeUser from './factory/fakeUser';
+import notificationService from './services/notification.service';
 
 mongoose.connect(config.MONGO_URL).then(() => {
     console.log('Connected to MongoDB');
@@ -315,17 +316,24 @@ const createJobTitle = async () => {
     });
 };
 const main = async () => {
-    let counter = 0;
-    const timerId = setInterval(() => {
-        if (counter === 20) {
-            clearInterval(timerId);
-        }
+    // let counter = 0;
+    // const timerId = setInterval(() => {
+    //     if (counter === 20) {
+    //         clearInterval(timerId);
+    //     }
 
-        console.log('create user');
+    //     console.log('create user');
 
-        fakeUser();
-    }, 5000);
-    fakeUser();
+    //     fakeUser();
+    // }, 5000);
+    // fakeUser();
+    const result = await notificationService.create({
+        type: 'relationship',
+        relationType: 'follow',
+        senderId: '67a82c96d34a2931113c1cc1',
+        targetId: '67a82903dc4e11e5ac465d5a',
+    });
+    console.log(result);
 };
 
 main();

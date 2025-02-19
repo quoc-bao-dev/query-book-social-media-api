@@ -4,6 +4,7 @@ import Friend from '../models/friend.schema';
 import pendingRequestSchema from '../models/pendingRequest.schema';
 import { UserDocument } from '../models/user.schema';
 import { friendSocket } from '../socket/friend';
+import notificationService from './notification.service';
 import pendingRequestService from './pendingRequest.service';
 import userService from './user.service';
 class FriendService {
@@ -29,14 +30,6 @@ class FriendService {
     }
 
     async getPendingRequests(userId: string) {
-        // const requests = await pendingRequestService.getPendingRequests(userId);
-
-        // const lsUserRequests = await Promise.all(
-        //     requests.map((request) =>
-        //         userService.findUserById(request.senderId.toString())
-        //     )
-        // );
-
         const lsRequest = await pendingRequestSchema
             .find({
                 receiverId: userId,
@@ -51,9 +44,10 @@ class FriendService {
             (request) => request.senderId as UserDocument
         );
 
-        return lsUserRequests.map((user: UserDocument) =>
-            new UserDTO(user).toUserRequest()
-        );
+        return lsUserRequests.map((user: UserDocument, index) => ({
+            ...new UserDTO(user).toUserRequest(),
+            createdAt: lsRequest[index].createdAt,
+        }));
     }
     async sendRequest(userId: string, targetId: string) {
         const request = await pendingRequestService.createRequest(
@@ -66,6 +60,7 @@ class FriendService {
         }
 
         const targetUser = await userService.findUserById(targetId);
+
         friendSocket(targetId).sendRequest(targetUser);
 
         return request;
@@ -108,6 +103,14 @@ class FriendService {
         await userService.addFriend(senderId, userId);
 
         const targetUser = await userService.findUserById(userId);
+
+        await notificationService.create({
+            type: 'relationship',
+            relationType: 'accept_request',
+            senderId,
+            targetId: userId,
+        });
+
         friendSocket(senderId).acceptRequest(targetUser);
 
         return relation;

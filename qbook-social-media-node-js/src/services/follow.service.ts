@@ -1,6 +1,8 @@
-import userService from './user.service';
-import Follower from '../models/follower.schema';
 import { UserDTO } from '../DTO/user.dto';
+import Follower from '../models/follower.schema';
+import { followSocket } from '../socket/follow';
+import notificationService from './notification.service';
+import userService from './user.service';
 
 class FollowService {
     async getFollowers(userId: string) {
@@ -21,6 +23,16 @@ class FollowService {
         Follower.create({
             userId,
             followerId: followingId,
+        });
+
+        const user = await userService.findUserById(userId);
+        followSocket(followingId).follow(user);
+
+        await notificationService.create({
+            type: 'relationship',
+            relationType: 'follow',
+            senderId: userId,
+            targetId: followingId,
         });
         return {
             message: 'Follow this user successful!',

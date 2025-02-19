@@ -24,9 +24,8 @@ class QuestionService {
             .exec();
 
         const result = questions;
-        console.log('[result]', result);
 
-        return questions;
+        return result;
     }
 
     async getByUserId(userId: string) {

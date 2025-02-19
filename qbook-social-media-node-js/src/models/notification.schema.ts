@@ -1,48 +1,37 @@
-import { Document, model, ObjectId, Schema, Types } from 'mongoose';
+import { Document, model, Schema } from 'mongoose';
 interface NotificationDocument extends Document {
-    type: 'personal' | 'followers' | 'broadcast';
-    recipients: {
-        userId: ObjectId;
-        isRead: boolean;
-    }[];
-    target: Types.ObjectId;
-    targetType: 'User' | 'Post' | 'Comment';
+    type: 'relationship';
+    relationType: 'accept_request' | 'follow';
+    senderId: Schema.Types.ObjectId;
+    targetId: Schema.Types.ObjectId;
+    recipients: [
+        {
+            user: { type: Schema.Types.ObjectId; ref: 'User' };
+            isRead: boolean;
+        }
+    ];
     message: string;
-    metadata: {
-        [key: string]: any;
-    };
+    timeEnd: Date;
 }
 const NotificationSchema = new Schema<NotificationDocument>(
     {
-        type: {
+        type: { type: String, enum: ['relationship'] },
+        relationType: {
             type: String,
-            enum: ['personal', 'followers', 'broadcast'], // Loại notification
-            required: true,
+            enum: ['accept_request', 'follow'],
         },
-
+        senderId: { type: Schema.Types.ObjectId, ref: 'User' },
+        targetId: { type: Schema.Types.ObjectId, ref: 'User' },
         recipients: [
             {
-                userId: {
-                    type: Schema.Types.ObjectId,
-                    ref: 'User',
-                    required: true,
-                }, // ID người nhận
-                isRead: { type: Boolean, default: false }, // Trạng thái đã đọc của từng người
+                userId: { type: Schema.Types.ObjectId, ref: 'User' },
+                isRead: Boolean,
             },
         ],
-
-        target: {
-            type: Schema.Types.ObjectId,
-            refPath: 'targetType',
-        },
-        targetType: {
-            type: String,
-            enum: ['User', 'Post', 'Comment'],
-        },
-
-        message: { type: String, required: true },
-        metadata: { type: Object },
+        message: String,
+        timeEnd: Date,
     },
+
     { timestamps: true }
 );
 

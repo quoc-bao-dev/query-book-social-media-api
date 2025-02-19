@@ -1,0 +1,78 @@
+import notificationSchema from '../models/notification.schema';
+import userService from './user.service';
+
+class NotificationService {
+    async getByUserId(userId: string) {
+        console.log('[userId]', userId);
+
+        const notifies = await notificationSchema.find({
+            recipients: { $elemMatch: { userId } },
+        });
+
+        return notifies;
+    }
+    async create(payload: any) {
+        const type = payload.type;
+        if (type === 'relationship') {
+            const relationType = payload.relationType;
+
+            if (relationType === 'accept_request') {
+                const notify = await this.createAcceptNotify(payload);
+                return notify;
+            }
+
+            if (relationType === 'follow') {
+                const notify = await this.createFollowNotify(payload);
+                return notify;
+            }
+        }
+    }
+
+    private async createAcceptNotify(payload: any) {
+        const { senderId, targetId } = payload;
+
+        const targetUser = await userService.findUserById(targetId);
+
+        const message = `${targetUser.firstName} ${targetUser.lastName} has been accept our request`;
+
+        const recipients = [{ userId: senderId, isRead: false }];
+
+        const payloadInput = {
+            type: 'relationship',
+            relationType: 'accept_request',
+            senderId,
+            targetId,
+            recipients,
+            message,
+        };
+
+        const notify = await notificationSchema.create(payloadInput);
+
+        return notify;
+    }
+
+    private async createFollowNotify(payload: any) {
+        const { senderId, targetId } = payload;
+
+        const sender = await userService.findUserById(senderId);
+
+        const message = `${sender.firstName} ${sender.lastName} has been follow you`;
+
+        const recipients = [{ userId: targetId, isRead: false }];
+
+        const payloadInput = {
+            type: 'relationship',
+            relationType: 'follow',
+            senderId,
+            targetId,
+            recipients,
+            message,
+        };
+
+        const notify = await notificationSchema.create(payloadInput);
+
+        return notify;
+    }
+}
+
+export default new NotificationService();
