@@ -1,3 +1,4 @@
+import MediaDTO from '../DTO/media.dto';
 import questionSchema from '../models/question.schema';
 import hashTagService from './hashTag.service';
 
@@ -29,24 +30,39 @@ class QuestionService {
         const questions = await questionSchema
             .find(query)
             .limit(limit)
-            .skip(page)
+            .skip((page - 1) * limit)
+            .populate({
+                path: 'userId',
+                select: 'name email avatar', // Chỉ lấy các trường cần thiết
+                populate: {
+                    path: 'avatar', // Populate avatar từ bảng Media
+                },
+            })
             .populate('hashtags')
             .exec();
 
-        const result = questions;
-
-        console.log({
-            limit,
-            page,
-            total: await questionSchema.countDocuments(),
+        const processedQuestions = questions.map((question) => {
+            const user = question.userId.toObject();
+            return {
+                ...question.toObject(),
+                userId: {
+                    ...user,
+                    avatarUrl:
+                        user?.avatar && new MediaDTO(user.avatar).toUrl(),
+                },
+            };
         });
+
+        const result = processedQuestions;
+
+        console.log('[questions]', questions);
 
         return {
             data: result,
             pagination: {
                 limit,
                 page,
-                total: await questionSchema.countDocuments(),
+                total: await questionSchema.countDocuments(query),
             },
         };
     }
