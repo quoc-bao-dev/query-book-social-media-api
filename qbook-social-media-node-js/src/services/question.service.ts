@@ -1,8 +1,29 @@
 import MediaDTO from '../DTO/media.dto';
-import questionSchema from '../models/question.schema';
+import questionSchema, { QuestionDocument } from '../models/question.schema';
+import { UserDocument } from '../models/user.schema';
 import hashTagService from './hashTag.service';
 
 class QuestionService {
+    private userOption = {
+        path: 'userId',
+        select: 'name email avatar firstName lastName', // Chỉ lấy các trường cần thiết
+        populate: {
+            path: 'avatar', // Populate avatar từ bảng Media
+        },
+    };
+
+    private mapUser = (questions: QuestionDocument[]) =>
+        questions.map((question) => {
+            const user = question.userId.toObject();
+            return {
+                ...question.toObject(),
+                userId: {
+                    ...user,
+                    avatarUrl:
+                        user?.avatar && new MediaDTO(user.avatar).toUrl(),
+                },
+            };
+        });
     async create(payload: any) {
         const hashtags = await Promise.all(
             payload.hashtags.map((item: string) => hashTagService.create(item))
@@ -31,31 +52,13 @@ class QuestionService {
             .find(query)
             .limit(limit)
             .skip((page - 1) * limit)
-            .populate({
-                path: 'userId',
-                select: 'name email avatar firstName lastName', // Chỉ lấy các trường cần thiết
-                populate: {
-                    path: 'avatar', // Populate avatar từ bảng Media
-                },
-            })
+            .populate(this.userOption)
             .populate('hashtags')
             .exec();
 
-        const processedQuestions = questions.map((question) => {
-            const user = question.userId.toObject();
-            return {
-                ...question.toObject(),
-                userId: {
-                    ...user,
-                    avatarUrl:
-                        user?.avatar && new MediaDTO(user.avatar).toUrl(),
-                },
-            };
-        });
+        const processedQuestions = this.mapUser(questions);
 
         const result = processedQuestions;
-
-        console.log('[questions]', questions);
 
         return {
             data: result,
@@ -70,10 +73,13 @@ class QuestionService {
     async getByUserId(userId: string) {
         const questions = await questionSchema
             .find({ userId })
+            .populate(this.userOption)
             .populate('hashtags')
             .exec();
 
-        const result = questions;
+        const processedQuestions = this.mapUser(questions);
+
+        const result = processedQuestions;
 
         return result;
     }
