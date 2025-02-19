@@ -16,7 +16,7 @@ class QuestionService {
         return result;
     }
 
-    async getAll(search: any) {
+    async getAll(limit = 10, page = 1, search: any) {
         const query: any = {};
 
         if (search) {
@@ -28,12 +28,27 @@ class QuestionService {
 
         const questions = await questionSchema
             .find(query)
+            .limit(limit)
+            .skip(page)
             .populate('hashtags')
             .exec();
 
         const result = questions;
 
-        return result;
+        console.log({
+            limit,
+            page,
+            total: await questionSchema.countDocuments(),
+        });
+
+        return {
+            data: result,
+            pagination: {
+                limit,
+                page,
+                total: await questionSchema.countDocuments(),
+            },
+        };
     }
 
     async getByUserId(userId: string) {

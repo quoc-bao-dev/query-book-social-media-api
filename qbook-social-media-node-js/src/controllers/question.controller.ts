@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { createResponse } from '../core';
+import { createPaginationResponse, createResponse } from '../core';
 import questionService from '../services/question.service';
 
 const QuestionController = {
@@ -38,12 +38,17 @@ const QuestionController = {
     },
 
     getAll: async (req: Request, res: Response) => {
-        const { s } = req.query;
-        const result = await questionService.getAll(s);
-        const response = createResponse({
+        const { s, limit, page } = req.query;
+        const result = await questionService.getAll(
+            Number(limit ?? 10),
+            Number(page ?? 1),
+            s
+        );
+        const response = createPaginationResponse({
             status: 200,
             message: 'get all question successful!',
-            data: result,
+            data: result.data,
+            pagination: result.pagination,
         });
 
         res.status(response.status).json(response);
