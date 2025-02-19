@@ -16,9 +16,18 @@ class QuestionService {
         return result;
     }
 
-    async getAll() {
+    async getAll(search: any) {
+        const query: any = {};
+
+        if (search) {
+            query.$or = [
+                { title: { $regex: search, $options: 'i' } }, // Tìm kiếm trong tiêu đề (không phân biệt hoa thường)
+                { question: { $regex: search, $options: 'i' } }, // Tìm kiếm trong nội dung
+            ];
+        }
+
         const questions = await questionSchema
-            .find()
+            .find(query)
             .populate('hashtags')
             .exec();
 

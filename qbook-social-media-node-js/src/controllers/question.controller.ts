@@ -38,7 +38,8 @@ const QuestionController = {
     },
 
     getAll: async (req: Request, res: Response) => {
-        const result = await questionService.getAll();
+        const { s } = req.query;
+        const result = await questionService.getAll(s);
         const response = createResponse({
             status: 200,
             message: 'get all question successful!',
