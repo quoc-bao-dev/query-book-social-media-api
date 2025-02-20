@@ -1,6 +1,5 @@
 import MediaDTO from '../DTO/media.dto';
 import questionSchema, { QuestionDocument } from '../models/question.schema';
-import { UserDocument } from '../models/user.schema';
 import hashTagService from './hashTag.service';
 
 class QuestionService {
@@ -32,6 +31,18 @@ class QuestionService {
         payload.hashtags = hashtags.map((item) => item._id.toString());
 
         const question = await questionSchema.create(payload);
+
+        const result = question;
+
+        return result;
+    }
+
+    async getById(id: string) {
+        const question = await questionSchema
+            .findById(id)
+            .populate(this.userOption)
+            .populate('hashtags')
+            .exec();
 
         const result = question;
 

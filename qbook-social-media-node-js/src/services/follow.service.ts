@@ -26,7 +26,6 @@ class FollowService {
         });
 
         const user = await userService.findUserById(userId);
-        followSocket(followingId).follow(user);
 
         await notificationService.create({
             type: 'relationship',
@@ -34,6 +33,8 @@ class FollowService {
             senderId: userId,
             targetId: followingId,
         });
+        followSocket(followingId).follow(user);
+
         return {
             message: 'Follow this user successful!',
         };

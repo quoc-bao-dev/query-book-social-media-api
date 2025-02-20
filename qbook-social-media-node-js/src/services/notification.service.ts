@@ -2,12 +2,28 @@ import notificationSchema from '../models/notification.schema';
 import userService from './user.service';
 
 class NotificationService {
+    private userOption = [
+        {
+            path: 'senderId',
+            select: 'firstName lastName email handle professional accountType _id avatar',
+            populate: {
+                path: 'avatar',
+            },
+        },
+        {
+            path: 'targetId',
+            select: 'firstName lastName email handle professional accountType _id avatar',
+            populate: {
+                path: 'avatar',
+            },
+        },
+    ];
     async getByUserId(userId: string) {
-        console.log('[userId]', userId);
-
-        const notifies = await notificationSchema.find({
-            recipients: { $elemMatch: { userId } },
-        });
+        const notifies = await notificationSchema
+            .find({
+                recipients: { $elemMatch: { userId } },
+            })
+            .populate(this.userOption);
 
         return notifies;
     }
