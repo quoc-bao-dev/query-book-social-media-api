@@ -37,7 +37,7 @@ const QuestionController = {
         res.status(response.status).json(response);
     },
 
-    getByUserId: async (req: Request, res: Response) => {
+    getById: async (req: Request, res: Response) => {
         const { id } = req.params;
         const result = await questionService.getById(id);
         const response = createResponse({
