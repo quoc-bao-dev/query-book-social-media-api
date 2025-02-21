@@ -8,18 +8,28 @@ export interface AnswerDocument extends Document {
     vote: ObjectId[];
 }
 
-const AnswerSchema = new Schema<AnswerDocument>({
-    userId: { type: Types.ObjectId, require: true },
-    questionId: { type: Types.ObjectId, require: true, ref: 'Question' },
-    content: { type: Types.ObjectId, require: true },
-    code: {
-        fileType: {
-            type: String,
-            enum: ['c', 'cpp', 'java', 'python', 'javascript', 'typescript'],
+const AnswerSchema = new Schema<AnswerDocument>(
+    {
+        userId: { type: Types.ObjectId, require: true, ref: 'User' },
+        questionId: { type: Types.ObjectId, require: true, ref: 'Question' },
+        content: { type: String, require: true },
+        code: {
+            fileType: {
+                type: String,
+                enum: [
+                    'c',
+                    'cpp',
+                    'java',
+                    'python',
+                    'javascript',
+                    'typescript',
+                ],
+            },
+            code: String,
         },
-        code: String,
+        vote: [{ type: Types.ObjectId, ref: 'User' }],
     },
-    vote: [{ type: Types.ObjectId, ref: 'User' }],
-});
+    { timestamps: true }
+);
 
 export default model('Answer', AnswerSchema);
