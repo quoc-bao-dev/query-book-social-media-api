@@ -1,3 +1,4 @@
+import MediaDTO from '../DTO/media.dto';
 import notificationSchema from '../models/notification.schema';
 import userService from './user.service';
 
@@ -25,7 +26,30 @@ class NotificationService {
             })
             .populate(this.userOption);
 
-        return notifies;
+        const notifyObj = notifies.map((doc) => doc.toObject());
+
+        const result = notifyObj.map((_item) => ({
+            ..._item,
+            senderId: _item.senderId
+                ? {
+                      ..._item?.senderId,
+                      avatarUrl: _item?.senderId?.avatar
+                          ? new MediaDTO(_item.senderId.avatar).toUrl()
+                          : null,
+                  }
+                : null,
+            targetId: _item.targetId
+                ? {
+                      ..._item?.targetId,
+                      avatarUrl: _item?.targetId?.avatar
+                          ? new MediaDTO(_item.targetId.avatar).toUrl()
+                          : null,
+                  }
+                : null,
+        }));
+
+        console.log('[result]', result);
+        return result;
     }
     async create(payload: any) {
         const type = payload.type;

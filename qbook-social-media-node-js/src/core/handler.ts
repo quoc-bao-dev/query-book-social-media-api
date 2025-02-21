@@ -7,6 +7,12 @@ const errorHandler = (
     next: NextFunction
 ) => {
     const statusCode = err.statusCode || 500;
+    console.log('error', {
+        status: statusCode,
+        message: err.message,
+        errors: err?.errors,
+    });
+
     res.status(statusCode).json({
         status: statusCode,
         message: err.message,

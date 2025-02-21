@@ -72,8 +72,6 @@ const deployController = {
         const subDomain = req.params.subDomain;
         const userId = req?.userId;
 
-        console.log(12121212);
-
         if (!subDomain) {
             res.status(400).json({ message: 'Subdomain is required' });
             return;

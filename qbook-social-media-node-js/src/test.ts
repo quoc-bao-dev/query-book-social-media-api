@@ -333,7 +333,6 @@ const main = async () => {
         senderId: '67a82c96d34a2931113c1cc1',
         targetId: '67a82903dc4e11e5ac465d5a',
     });
-    console.log(result);
 };
 
 main();
