@@ -1,3 +1,4 @@
+import messageSchema from '../models/message.schema';
 import roomChatSchema from '../models/roomChat.schema';
 import { getUserById } from '../utils';
 
@@ -31,10 +32,17 @@ class RoomChatService {
                             }
                         })
                     );
+                    const lastMessage = await messageSchema
+                        .find({ roomChatId: room._id })
+                        .sort({ createdAt: -1 })
+                        .limit(1)
+                        .select('content senderId createdAt')
+                        .exec();
 
                     return {
                         ...room.toObject(), // Chuyển document Mongoose thành object thuần
                         members: members.filter(Boolean), // Lọc bỏ null nếu có lỗi
+                        lastMessage,
                     };
                 })
             );
@@ -100,9 +108,16 @@ class RoomChatService {
                 })
             );
 
+            const lastMessage = await messageSchema
+                .find({ roomChatId: roomChat._id })
+                .sort({ createdAt: -1 })
+                .limit(1)
+                .select('content senderId createdAt')
+                .exec();
             return {
                 ...roomChat.toObject(), // Chuyển document Mongoose thành object thuần
                 members: members.filter(Boolean), // Lọc bỏ null nếu có lỗi
+                lastMessage,
             };
         } catch (error) {
             console.error('Lỗi khi lấy phòng chat với bạn bè:', error);

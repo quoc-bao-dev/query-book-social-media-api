@@ -1,4 +1,5 @@
 import messageSchema from '../models/message.schema';
+import roomChatSchema from '../models/roomChat.schema';
 
 class ChatService {
     async getMessageByRoomChatId(
@@ -18,7 +19,14 @@ class ChatService {
     }
 
     async createMessage(data: any) {
+        const roomId = data.roomChatId;
+
         const message = await messageSchema.create(data);
+        await roomChatSchema.updateOne(
+            { _id: roomId },
+            { lastMessage: message._id }
+        );
+
         return message;
     }
 }
