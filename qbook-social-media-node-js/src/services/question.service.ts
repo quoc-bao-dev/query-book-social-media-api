@@ -44,7 +44,15 @@ class QuestionService {
             .populate('hashtags')
             .exec();
 
-        const result = question;
+        const result = {
+            ...question?.toObject(),
+            userId: {
+                ...question?.userId.toObject(),
+                avatarUrl:
+                    question?.userId?.avatar &&
+                    new MediaDTO(question?.userId?.avatar).toUrl(),
+            },
+        };
 
         return result;
     }
