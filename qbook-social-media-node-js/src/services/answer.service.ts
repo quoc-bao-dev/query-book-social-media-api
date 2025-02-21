@@ -3,8 +3,6 @@ import answerSchema from '../models/answer.schema';
 
 class AnswerService {
     async getByQuestionId(questionId: string) {
-        console.log('[questionId]', questionId);
-
         const answers = await answerSchema
             .find({ questionId })
             .populate([
@@ -30,8 +28,6 @@ class AnswerService {
                 },
             };
         });
-
-        console.log('[answers]', answers);
 
         return result;
     }
