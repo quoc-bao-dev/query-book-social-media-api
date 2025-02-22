@@ -6,6 +6,8 @@ interface RoomChatDocument extends Document {
     groupAvatar: string;
     messages: Schema.Types.ObjectId[];
     lastMessage: Schema.Types.ObjectId;
+    seenBy: string[];
+
 }
 
 const RoomChatSchema = new Schema<RoomChatDocument>(
@@ -15,7 +17,9 @@ const RoomChatSchema = new Schema<RoomChatDocument>(
         isGroup: { type: Boolean, default: false },
         groupAvatar: { type: String, default: '' },
         messages: [{ type: Schema.Types.ObjectId, ref: 'Message' }],
-        lastMessage: { type: Schema.Types.ObjectId, ref: 'Message' },
+        lastMessage: { type: Schema.Types.ObjectId, ref: 'Message', },
+        seenBy: [{ type: String }],
+
     },
     { timestamps: true }
 );

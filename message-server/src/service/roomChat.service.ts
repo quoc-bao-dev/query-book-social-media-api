@@ -25,7 +25,7 @@ class RoomChatService {
                                 return await getUserById(memberId);
                             } catch (error) {
                                 console.error(
-                                    `Lỗi khi lấy user ${memberId}:`,
+                                    `Lỗi khi lấy user ${ memberId }:`,
                                     error
                                 );
                                 return null;
@@ -65,7 +65,7 @@ class RoomChatService {
                     try {
                         return await getUserById(memberId);
                     } catch (error) {
-                        console.error(`Lỗi khi lấy user ${memberId}:`, error);
+                        console.error(`Lỗi khi lấy user ${ memberId }:`, error);
                         return null; // Trả về null nếu lỗi
                     }
                 })
@@ -102,7 +102,7 @@ class RoomChatService {
                     try {
                         return await getUserById(memberId);
                     } catch (error) {
-                        console.error(`Lỗi khi lấy user ${memberId}:`, error);
+                        console.error(`Lỗi khi lấy user ${ memberId }:`, error);
                         return null;
                     }
                 })
@@ -134,6 +134,20 @@ class RoomChatService {
         };
         const roomChat = await roomChatSchema.create(payload);
         return roomChat;
+    }
+
+    async seenMessage(userId: string, roomChatId: string) {
+        try {
+            await roomChatSchema.updateOne(
+                { _id: roomChatId },
+                { $addToSet: { seenBy: userId } }, // Chỉ thêm userId nếu chưa có
+                { timestamps: false } // Ngăn cập nhật updatedAt
+            );
+        }
+        catch (error) {
+            console.log(error);
+            return null
+        }
     }
 }
 

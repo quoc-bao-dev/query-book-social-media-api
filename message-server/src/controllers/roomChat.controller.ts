@@ -18,6 +18,7 @@ const roomChatController = {
             return;
         }
         const data = await roomChatService.getRoomChatByUserId(userId);
+
         res.status(200).json(data);
     },
 

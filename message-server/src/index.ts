@@ -14,7 +14,7 @@ const MONGO_URL =
     process.env.MONGO_DB_URL ?? 'mongodb://localhost:27017/message';
 
 mongoose.connect(MONGO_URL).then(() => {
-    console.log('Connect to massage server');
+    console.log('Connect to MongoDB');
 });
 
 const io = new Server(server, {
