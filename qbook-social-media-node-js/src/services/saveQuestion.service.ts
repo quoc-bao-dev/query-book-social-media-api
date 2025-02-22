@@ -1,3 +1,4 @@
+import path from 'path';
 import MediaDTO from '../DTO/media.dto';
 import saveQuestionSchema, {
     SaveQuestion,
@@ -5,6 +6,12 @@ import saveQuestionSchema, {
 
 class SaveQuestionService {
     private questionOption = [
+        {
+            path: 'questionId',
+            populate: {
+                path: 'hashtags',
+            },
+        },
         {
             path: 'questionId',
             populate: {
