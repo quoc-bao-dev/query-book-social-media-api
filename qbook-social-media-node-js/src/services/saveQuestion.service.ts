@@ -1,4 +1,3 @@
-import path from 'path';
 import MediaDTO from '../DTO/media.dto';
 import saveQuestionSchema, {
     SaveQuestion,
