@@ -29,6 +29,17 @@ const AuthController = {
         res.status(response.status).json(response);
     },
 
+    async genActiveToken(req: Request, res: Response) {
+        const { email } = req.body;
+        const activeToken = await authService.genActiveToken(email);
+        const response = createResponse({
+            status: 200,
+            message: 'Gen active token successful',
+            data: { activeToken },
+        });
+
+        res.status(response.status).json(response);
+    },
     async activeAccount(req: Request, res: Response) {
         const { otp } = req.body;
 

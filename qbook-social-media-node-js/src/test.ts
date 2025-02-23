@@ -315,24 +315,21 @@ const createJobTitle = async () => {
         const jobTitle = await jobTitleService.create(item);
     });
 };
+const createUser = () => {
+    let counter = 0;
+    const timerId = setInterval(() => {
+        if (counter === 20) {
+            clearInterval(timerId);
+        }
+
+        console.log('create user');
+
+        fakeUser();
+    }, 5000);
+    fakeUser();
+};
 const main = async () => {
-    // let counter = 0;
-    // const timerId = setInterval(() => {
-    //     if (counter === 20) {
-    //         clearInterval(timerId);
-    //     }
-
-    //     console.log('create user');
-
-    //     fakeUser();
-    // }, 5000);
-    // fakeUser();
-    const result = await notificationService.create({
-        type: 'relationship',
-        relationType: 'follow',
-        senderId: '67a82c96d34a2931113c1cc1',
-        targetId: '67a82903dc4e11e5ac465d5a',
-    });
+    createUser();
 };
 
 main();

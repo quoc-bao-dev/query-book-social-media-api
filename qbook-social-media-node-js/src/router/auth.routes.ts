@@ -29,6 +29,8 @@ authRouter.post(
     wrapAsync(AuthController.verify2Fa)
 );
 
+authRouter.post('/gen-active-token', wrapAsync(AuthController.genActiveToken));
+
 authRouter.post('/refresh-token', wrapAsync(AuthController.refreshToken));
 
 authRouter.post('/verify', authMiddleware, wrapAsync(AuthController.verify));

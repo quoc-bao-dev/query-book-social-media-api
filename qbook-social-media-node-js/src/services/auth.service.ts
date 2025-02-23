@@ -74,6 +74,29 @@ class AuthService {
         return token;
     }
 
+    async genActiveToken(email: string) {
+        const user = await User.findOne({ email });
+        if (!user) {
+            throw ApiError.badRequest('Email not found');
+        }
+
+        const userId = (user as { id: string }).id.toString();
+
+        const OTP = generateOTP();
+        await activeAccountRedis.setOTP(userId, OTP);
+
+        sendEmail({
+            to: email,
+            subject: 'Verify your email',
+            text: `Use the following OTP to verify your email: ${OTP}`,
+            userName: user.username,
+            otp: OTP,
+        });
+
+        const token = genActiveAccountToken(userId);
+
+        return token;
+    }
     async activeAccount(userId: string, otp: string) {
         const OTPOfUser = await activeAccountRedis.getOTP(userId);
 
