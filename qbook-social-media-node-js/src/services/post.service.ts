@@ -74,6 +74,11 @@ class PostService {
         if (userId) {
             const user = await userService.findUserProfileById(userId);
 
+            const friends = [
+                ...user.friends.map((id) => id.toString()),
+                userId,
+            ];
+
             conditionSearch['$or'] = [
                 {
                     status: 'public',
@@ -84,10 +89,10 @@ class PostService {
                 },
                 {
                     status: {
-                        $in: ['public', 'friend'],
+                        $in: ['friend', 'public'],
                     },
                     userId: {
-                        $in: user.friends,
+                        $in: friends,
                     },
                 },
                 {
@@ -105,6 +110,7 @@ class PostService {
 
         const lsPost = await Post.find(conditionSearch)
             .populate('hashTags media userId likes comments')
+            .sort({ interestScore: -1 })
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit);
@@ -127,6 +133,16 @@ class PostService {
             _id: id,
             isDeleted: { $in: [false, undefined] },
         }).populate('hashTags media userId likes comments');
+
+        if (post?.view) {
+            post.view += 1;
+            await post?.save();
+        }
+
+        if (post?.interestScore) {
+            post.interestScore += 1;
+            await post?.save();
+        }
 
         if (!post) {
             throw ApiError.notFound('Post not found');

@@ -48,7 +48,6 @@ class NotificationService {
                 : null,
         }));
 
-        console.log('[result]', result);
         return result;
     }
     async create(payload: any) {

@@ -15,6 +15,7 @@ class LikeService {
 
         if (isLiked) {
             await Like.findByIdAndDelete(likeInDB.id);
+            post.interestScore -= 1;
             post.likes.filter((item) => item.toString() !== likeInDB?.id);
         }
 
@@ -24,6 +25,7 @@ class LikeService {
                 postId,
                 type: 'post',
             });
+            post.interestScore += 1;
             await like.save();
             post.likes.push(like.id);
         }

@@ -37,6 +37,7 @@ class CommentService {
         };
         const comment = await Comment.create(commentPayload);
         postInDB.comments.push(comment.id);
+        postInDB.interestScore += 3;
         await postInDB.save();
         return comment;
     }
