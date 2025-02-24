@@ -41,7 +41,7 @@ export const templateSendOTP = (name: string, otp: string) =>
         .replace('{{otp6}}', otp[5]);
 
 // Hàm gửi email
-export const sendEmail = async ({
+export const sendEmailOtp = async ({
     to,
     subject,
     text,
@@ -64,6 +64,48 @@ export const sendEmail = async ({
         });
 
         console.log('Email sent:', info.messageId);
+        return info;
+    } catch (error) {
+        console.error('Error sending email:', error);
+        throw error;
+    }
+};
+
+// send mail reset passsword
+
+const templateResetPassword = (name: string, reset_link: string) => {
+    const templatePath = path.join(
+        __dirname,
+        '../templates/template-email-reset-password.html'
+    );
+    const templateContent = fs.readFileSync(templatePath, 'utf-8');
+    return templateContent
+        .replace('{{name}}', name)
+        .replace('{{reset_link}}', reset_link);
+};
+
+export const sendEmailResetPassword = async ({
+    to,
+    subject,
+    text,
+    userName,
+    reset_link,
+}: {
+    to: string;
+    subject: string;
+    text: string;
+    userName: string;
+    reset_link: string;
+}) => {
+    try {
+        const info = await transporter.sendMail({
+            from: process.env.EMAIL_USER, // Email gửi
+            to, // Email nhận
+            subject, // Tiêu đề email
+            text, // Nội dung dạng text
+            html: templateResetPassword(userName, reset_link),
+        });
+
         return info;
     } catch (error) {
         console.error('Error sending email:', error);

@@ -112,7 +112,7 @@ export const resetPasswordMiddleware = (
     res: Response,
     next: NextFunction
 ) => {
-    const { resetPassToken } = req.body;
+    const resetPassToken = req.query.token || req.body.resetPassToken;
 
     if (!resetPassToken) {
         throw ApiError.unauthorized('Reset password token is required');

@@ -112,7 +112,9 @@ const AuthController = {
         const response = createResponse({
             status: 200,
             message: 'Forgot password successful',
-            data,
+            data: {
+                messageId: data,
+            },
         });
         res.status(response.status).json(response);
     },

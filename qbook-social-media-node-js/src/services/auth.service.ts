@@ -1,3 +1,4 @@
+import config from '../config/config';
 import ApiError from '../core/ApiError';
 import check2fa from '../libs/redis/check2fa.redis';
 import forgotPasswordRedis from '../libs/redis/forgotPassword.redis';
@@ -16,7 +17,10 @@ import {
 } from '../utils/authToken.utils';
 import { comparePassword, hashPassword } from '../utils/bcrypt.utils';
 import { toHandleName } from '../utils/convertString';
-import { sendEmail } from '../utils/nodeMailer.utils';
+import {
+    sendEmailOtp,
+    sendEmailResetPassword,
+} from '../utils/nodeMailer.utils';
 import { generateOTP } from '../utils/otp.utils';
 import tokenService from './token.service';
 
@@ -61,7 +65,7 @@ class AuthService {
 
         await activeAccountRedis.setOTP(userId, OTP);
 
-        sendEmail({
+        sendEmailOtp({
             to: email,
             subject: 'Verify your email',
             text: `Use the following OTP to verify your email: ${OTP}`,
@@ -85,7 +89,7 @@ class AuthService {
         const OTP = generateOTP();
         await activeAccountRedis.setOTP(userId, OTP);
 
-        sendEmail({
+        sendEmailOtp({
             to: email,
             subject: 'Verify your email',
             text: `Use the following OTP to verify your email: ${OTP}`,
@@ -137,7 +141,7 @@ class AuthService {
 
         if (user.isTwoFactorAuthEnabled) {
             const OTP = generateOTP();
-            sendEmail({
+            sendEmailOtp({
                 to: email,
                 subject: 'Verify your email',
                 text: `Use the following OTP to verify your email: ${OTP}`,
@@ -215,31 +219,30 @@ class AuthService {
             throw ApiError.badRequest('Email not found');
         }
 
-        const OTP = generateOTP();
-
-        sendEmail({
-            to: email,
-            subject: 'Verify your email',
-            text: `Use the following OTP to verify your email: ${OTP}`,
-            userName: user.username,
-            otp: OTP,
-        });
-
-        forgotPasswordRedis.setOTP(user.id.toString(), OTP);
         const resetPassToken = genResetPasswordToken(user.id.toString());
 
-        return {
-            resetPassToken,
-        };
+        const linkResetPass = `${config.CLIENT_URL}/reset-password?token=${resetPassToken}`;
+
+        const info = await sendEmailResetPassword({
+            to: email,
+            subject: 'Reset your password',
+            text: `Use the following link to reset your password: ${linkResetPass}`,
+            userName: user.username,
+            reset_link: linkResetPass,
+        });
+
+        return info.messageId;
     }
 
     async resetPassword(userId: string, otp: string, newPassword: string) {
-        const isValidOTP = await forgotPasswordRedis.verifyOTP(userId, otp);
-        if (!isValidOTP) {
-            throw ApiError.badRequest('OTP is invalid');
-        }
+        console.log('[reset password]', userId, newPassword);
 
-        await forgotPasswordRedis.deleteOTP(userId);
+        // const isValidOTP = await forgotPasswordRedis.verifyOTP(userId, otp);
+        // if (!isValidOTP) {
+        //     throw ApiError.badRequest('OTP is invalid');
+        // }
+
+        // await forgotPasswordRedis.deleteOTP(userId);
 
         const hashedPassword = await hashPassword(newPassword);
         await User.updateOne(
