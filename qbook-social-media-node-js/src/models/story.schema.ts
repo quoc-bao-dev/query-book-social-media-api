@@ -6,7 +6,7 @@ export interface StoryDocument extends Document {
     userId: ObjectId | UserDocument;
     content: string;
     media: string | MediaDocument;
-    status: 'public' | 'private' | 'hidden' | 'friend';
+    status: 'public' | 'private' | 'friend';
     viewer: ObjectId[] | UserDocument[];
     expireAt: Date;
     createdAt: Date;
@@ -17,6 +17,11 @@ const StorySchema = new Schema<StoryDocument>(
         userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
         content: { type: String, required: true },
         media: { type: String, ref: 'Media' },
+        status: {
+            type: String,
+            enum: ['public', 'private', 'friend'],
+            default: 'public',
+        },
         viewer: [{ type: Schema.Types.ObjectId, ref: 'User' }],
         expireAt: { type: Date, required: true, index: { expires: 0 } },
     },

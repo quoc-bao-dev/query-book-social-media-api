@@ -9,6 +9,7 @@ import UserProfile, { UserProfileDocument } from '../models/userProfile.schema';
 import { toHandleName } from '../utils/convertString';
 import jobTitleService from './jobTitle.service';
 import mediaService from './media.service';
+import { removeVietnameseTones } from '../utils/word';
 
 class UserService {
     async getMe(userId: string) {
@@ -127,6 +128,17 @@ class UserService {
                 { phone: { $regex: query, $options: 'i' } },
                 { bio: { $regex: query, $options: 'i' } },
                 { jobTitle: { $regex: query, $options: 'i' } },
+                {
+                    $expr: {
+                        $regexMatch: {
+                            input: {
+                                $concat: ['$firstName', ' ', '$lastName'],
+                            },
+                            regex: query,
+                            options: 'i',
+                        },
+                    },
+                },
             ],
         })
             .limit(limit)

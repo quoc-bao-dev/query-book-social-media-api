@@ -3,6 +3,7 @@ import { MediaDocument } from '../models/media.schema';
 import { StoryDocument } from '../models/story.schema';
 import { UserDocument } from '../models/user.schema';
 import { create } from 'lodash';
+import MediaDTO from './media.dto';
 
 class StoryDTO {
     userId: ObjectId | UserDocument;
@@ -43,6 +44,7 @@ class StoryDTO {
                 type: media.type,
                 sourceType: media.sourceType,
             },
+            mediaUrl: media && new MediaDTO(media).toUrl(),
             status: this.status,
             viewer: viewer,
             createdAt: this.createdAt,

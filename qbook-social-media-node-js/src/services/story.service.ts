@@ -16,10 +16,12 @@ class StoryService {
 
         conditionSearch['$or'] = [
             {
-                status: { $in: ['public', 'friend'] },
-                userId: { $in: [...user.friends, ...user.followings] },
+                status: { $in: ['friend'] },
+                userId: {
+                    $in: [...user.friends.map((id) => id.toString())],
+                },
             },
-            { status: 'private', userId },
+            { status: { $in: ['friend', 'private'] }, userId },
             { status: 'public' },
         ];
 
