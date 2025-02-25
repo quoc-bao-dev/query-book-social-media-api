@@ -29,7 +29,12 @@ class StoryService {
             .sort({
                 createdAt: -1,
             })
-            .populate('media userId viewer');
+            .populate([
+                { path: 'media  viewer' },
+                { path: 'userId', populate: 'avatar' },
+            ]);
+
+        console.log('stories', stories);
 
         return stories.map((story) => new StoryDTO(story).toResponse());
     }

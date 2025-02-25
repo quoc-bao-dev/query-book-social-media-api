@@ -36,6 +36,9 @@ class StoryDTO {
                 id: user.id,
                 name: user.username,
                 avatar: user.avatar,
+                avatarUrl:
+                    user.avatar &&
+                    new MediaDTO(user.avatar as MediaDocument).toUrl(),
             },
             content: this.content,
             media: {
