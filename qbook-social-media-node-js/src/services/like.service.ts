@@ -32,7 +32,9 @@ class LikeService {
 
         await post.save();
 
-        return isLiked;
+        const postResult = await postService.getPostById(postId);
+
+        return { isLiked, postResult };
     }
 
     async likeComment(commentId: string, userId: string) {

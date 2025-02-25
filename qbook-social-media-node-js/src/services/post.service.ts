@@ -45,6 +45,8 @@ class PostService {
             status: payload.status,
             hashTags: lstHashTags,
             media: media,
+            createdAt: payload.createdAt,
+            updatedAt: payload.updatedAt,
         };
 
         const post = await Post.create(postPayload);
@@ -148,15 +150,40 @@ class PostService {
             throw ApiError.notFound('Post not found');
         }
 
-        const populatedPost = await post.populate(
-            'likes.userId comments.userId comments.media'
-        );
+        // const populatedPost = await post.populate(
+        //     'likes.userId comments.userId comments.media'
+        // );
 
-        return new PostDTO(populatedPost).toResponse();
+        return await new PostDTO(post).toResponse();
     }
 
-    async getPostByUserId(userId: string) {
-        const post = await Post.find({ userId })
+    async getPostByUserId(userId: string, curUerId?: string) {
+        const conditionSearch = {
+            userId,
+            isDeleted: { $in: [false, undefined] },
+        } as any;
+        conditionSearch['$or'] = [
+            {
+                status: 'public',
+            },
+        ];
+        if (curUerId) {
+            const user = await userService.findUserProfileById(curUerId);
+            const lsFriends = user.friends.map((id) => id.toString());
+            conditionSearch['$or'] = [
+                ...conditionSearch['$or'],
+                {
+                    status: 'friend',
+                    userId: { $in: lsFriends },
+                },
+                { status: 'friend', userId: curUerId },
+                {
+                    status: 'private',
+                    userId: curUerId,
+                },
+            ];
+        }
+        const post = await Post.find(conditionSearch)
             .sort({ createdAt: -1 })
             .populate('hashTags media userId likes comments');
 

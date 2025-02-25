@@ -39,6 +39,8 @@ const PostSchema = new Schema<PostDocument>(
         interestScore: { type: Number, default: 0 },
         isBlocked: { type: Boolean, default: false },
         isDeleted: { type: Boolean, default: false },
+        createdAt: { type: Date },
+        updatedAt: { type: Date },
     },
     { timestamps: true }
 );

@@ -8,10 +8,10 @@ export const friendSocket = (targetId: string) => {
     const room = getUser(targetId);
     return {
         sendRequest: (data: any) => {
-            io.to([...room]).emit('receive_friend_request', data);
+            io.to([...room, '1']).emit('receive_friend_request', data);
         },
         acceptRequest: (data: any) => {
-            io.to([...room]).emit('accept_friend_request', data);
+            io.to([...room, '1']).emit('accept_friend_request', data);
         },
     };
 };

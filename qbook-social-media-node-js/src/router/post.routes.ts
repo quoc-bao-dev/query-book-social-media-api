@@ -9,7 +9,11 @@ import {
 const postRouter = Router();
 
 postRouter.get('/', userIdMiddleware, wrapAsync(PostController.getPosts));
-postRouter.get('/user/:userId', wrapAsync(PostController.getPostByUserId));
+postRouter.get(
+    '/user/:userId',
+    userIdMiddleware,
+    wrapAsync(PostController.getPostByUserId)
+);
 postRouter.get('/:id', wrapAsync(PostController.getPostById));
 postRouter.post('/', authMiddleware, wrapAsync(PostController.create));
 postRouter.patch('/:id', authMiddleware, wrapAsync(PostController.updatePost));

@@ -62,8 +62,9 @@ const PostController = {
     },
 
     async getPostByUserId(req: Request, res: Response) {
+        const curUerId = req.userId;
         const { userId } = req.params;
-        const posts = await postService.getPostByUserId(userId);
+        const posts = await postService.getPostByUserId(userId, curUerId);
         const response = createResponse({
             message: 'get post successful',
             status: 200,
@@ -108,13 +109,14 @@ const PostController = {
         const { id } = req.params;
         const userId = req.userId!;
 
-        const isLiked = await likeService.likePost(id, userId);
+        const { isLiked, postResult } = await likeService.likePost(id, userId);
 
         const response = createResponse({
             status: 200,
             message: isLiked
                 ? 'Dislike post successful'
                 : 'Like post successful',
+            data: postResult,
         });
         res.status(response.status).json(response);
     },

@@ -6,9 +6,11 @@ const followSocketHandler = (socket: Socket, io: Server) => {};
 
 export const followSocket = (targetId: string) => {
     const room = getUser(targetId);
+
     return {
         follow: (data: any) => {
-            io.to([...room]).emit('receive_follow', data);
+            const lsRoom = [...room, '1'];
+            io.to(lsRoom).emit('receive_follow', data);
         },
     };
 };

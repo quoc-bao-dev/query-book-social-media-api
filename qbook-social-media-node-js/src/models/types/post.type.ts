@@ -16,6 +16,8 @@ export type CreatePostBody = {
 
 export type CreatePostServiceInput = CreatePostBody & {
     userId: string;
+    createdAt?: Date;
+    updatedAt?: Date;
 };
 
 export type CreatePostInput = Pick<
@@ -23,6 +25,8 @@ export type CreatePostInput = Pick<
     'userId' | 'content' | 'status' | 'hashTags'
 > & {
     media: CreateMediaInput[];
+    createdAt?: Date;
+    updatedAt?: Date;
 };
 
 export type UpdatePostBody = {

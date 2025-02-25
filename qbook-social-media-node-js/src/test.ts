@@ -4,6 +4,7 @@ import { hashPassword } from './utils/bcrypt.utils';
 import config from './config/config';
 import fakeUser from './factory/fakeUser';
 import notificationService from './services/notification.service';
+import { generateHashtags } from './factory/fakePost';
 
 mongoose.connect(config.MONGO_URL).then(() => {
     console.log('Connected to MongoDB');
@@ -315,20 +316,18 @@ const createJobTitle = async () => {
         const jobTitle = await jobTitleService.create(item);
     });
 };
-const createUser = () => {
-    let counter = 0;
-    const timerId = setInterval(() => {
-        if (counter === 20) {
-            clearInterval(timerId);
-        }
-
-        console.log('create user');
-
-        fakeUser();
-    }, 5000);
-    fakeUser();
+const createUser = async () => {
+    for (let i = 0; i < 20; i++) {
+        await fakeUser();
+        console.log('done ' + i);
+    }
 };
 const main = async () => {
+    try {
+        await createJobTitle();
+    } catch (error) {
+        console.log('job title error');
+    }
     createUser();
 };
 
