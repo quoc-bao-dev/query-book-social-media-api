@@ -2,8 +2,9 @@
     "name": "express-typescript",
     "version": "1.0.0",
     "scripts": {
+        "start:prod": "node dist/index.js",
         "start": "node --env-file=.env.production dist/index.js",
-        "build": "tsc",
+        "build": "tsc --noCheck && npx copyfiles -u 1 \"src/openapi/**/*.yaml\" dist/ \"src/templates/**\" dist/",
         "dev": "bun --watch --env-file=.env.development src/index.ts nodemon",
         "docs:watch": "nodemon",
         "test-utils": "bun src/test.ts"
@@ -50,6 +51,7 @@
         "@types/swagger-jsdoc": "^6.0.4",
         "@types/swagger-ui-express": "^4.1.7",
         "@types/yamljs": "^0.2.34",
+        "copyfiles": "^2.4.1",
         "ts-node": "^10.9.2",
         "typescript": "^5.7.2"
     }

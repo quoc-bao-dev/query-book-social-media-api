@@ -17,6 +17,7 @@ import {
 } from '../utils/authToken.utils';
 import { comparePassword, hashPassword } from '../utils/bcrypt.utils';
 import { toHandleName } from '../utils/convertString';
+import { setCookie } from '../utils/cookies';
 import {
     sendEmailOtp,
     sendEmailResetPassword,

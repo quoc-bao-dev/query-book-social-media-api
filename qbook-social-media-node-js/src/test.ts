@@ -317,7 +317,7 @@ const createJobTitle = async () => {
     });
 };
 const createUser = async () => {
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 50; i++) {
         await fakeUser();
         console.log('done ' + i);
     }

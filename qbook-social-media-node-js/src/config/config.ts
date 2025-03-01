@@ -1,7 +1,12 @@
 const config = {
     PORT: process.env.PORT || 3000,
+
+    DOMAIN: process.env.DOMAIN as string,
+
     PORT_REDIS: (process.env.PORT_REDIS || 6379) as number,
     HOST_REDIS: (process.env.HOST_REDIS || 'localhost') as string,
+    PASS_REDIS: process.env.PASS_REDIS as string,
+    NAME_REDIS: process.env.NAME_REDIS as string,
 
     MONGO_URL: process.env.MONGO_URL as string,
 

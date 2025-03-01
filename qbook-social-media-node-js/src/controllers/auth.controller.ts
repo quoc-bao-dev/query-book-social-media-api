@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { createResponse } from '../core';
 import ApiError from '../core/ApiError';
 import authService from '../services/auth.service';
+import { setCookie } from '../utils/cookies';
 import { decodeToken } from '../utils/jwt.utils';
 
 export type RegisterBody = {
@@ -85,6 +86,9 @@ const AuthController = {
                 refreshToken,
             },
         });
+
+        setCookie(res).accessToken(accessToken!);
+        setCookie(res).refreshToken(refreshToken!);
 
         res.status(response.status).json(response);
     },
