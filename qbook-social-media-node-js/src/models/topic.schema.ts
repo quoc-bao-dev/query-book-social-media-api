@@ -7,9 +7,9 @@ export interface TopicDocument extends Document {
 }
 
 const TopicSchema = new Schema({
-    name: { type: String, required: true },
-    description: { type: String },
-    interestScore: { type: Number, default: 0 },
+    name: { type: String, required: true, unique: true, trim: true },
+    description: { type: String, trim: true },
+    interestScore: { type: Number, default: 0, min: 0 },
 });
 
 export default model('Topic', TopicSchema);

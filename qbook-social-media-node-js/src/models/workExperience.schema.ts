@@ -4,6 +4,7 @@ export interface WorkExperienceDocument extends Document {
     userId: ObjectId;
     jobTitleId: ObjectId;
     company: string;
+    content: string;
     startDate?: Date;
     endDate?: Date;
     isCurrent: boolean;
@@ -19,6 +20,7 @@ const WorkExperienceSchema = new Schema<WorkExperienceDocument>(
             required: true,
         },
         company: { type: String, required: true },
+        content: { type: String, required: true },
         startDate: { type: Date, required: true },
         endDate: { type: Date },
         isCurrent: { type: Boolean, default: false },

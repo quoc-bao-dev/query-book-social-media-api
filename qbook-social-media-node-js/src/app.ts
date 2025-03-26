@@ -16,14 +16,7 @@ app.use(cookieParser());
 const corsOrigins = config.CORS_ALLOWED_ORIGINS.split(',');
 app.use(
     cors({
-        origin: (origin, callback) => {
-            if (origin === undefined || corsOrigins.includes(origin)) {
-                // Nếu origin là localhost với bất kỳ cổng nào
-                callback(null, true);
-            } else {
-                callback(new Error('Not allowed by CORS'));
-            }
-        },
+        origin: corsOrigins,
         credentials: true,
     })
 );

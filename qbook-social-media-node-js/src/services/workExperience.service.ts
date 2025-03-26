@@ -24,6 +24,7 @@ class WorkExperienceService {
         }
 
         const workPayload: CreateWorkExperienceInput = {
+            content: payload.content,
             company: payload.company,
             jobTitleId: title.id,
             startDate: payload.endDate,
@@ -38,6 +39,7 @@ class WorkExperienceService {
 
     async getWorkExperiences(userId: string) {
         const workExperiences = await WorkExperience.find({ userId });
+
         return workExperiences;
     }
 
@@ -61,7 +63,7 @@ class WorkExperienceService {
             throw ApiError.notFound('User not found');
         }
 
-        if (workExperience.userId !== user.id) {
+        if (workExperience.userId.toString() !== user.id.toString()) {
             throw ApiError.forbidden(
                 'You are not allowed to update this work experience'
             );
@@ -108,7 +110,7 @@ class WorkExperienceService {
             throw ApiError.notFound('User not found');
         }
 
-        if (workExperience.userId !== user.id) {
+        if (workExperience.userId.toString() !== user.id.toString()) {
             throw ApiError.forbidden(
                 'You are not allowed to delete this work experience'
             );

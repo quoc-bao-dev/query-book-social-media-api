@@ -24,8 +24,6 @@ const SaveQuestionController = {
             questionId,
         };
 
-        console.log(payload);
-
         const question = await saveQuestionService.create(payload);
         const response = createResponse({
             status: 200,

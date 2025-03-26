@@ -5,6 +5,7 @@ import config from './config/config';
 import fakeUser from './factory/fakeUser';
 import notificationService from './services/notification.service';
 import { generateHashtags } from './factory/fakePost';
+import { fakeTopic } from './factory/fakeTopic';
 
 mongoose.connect(config.MONGO_URL).then(() => {
     console.log('Connected to MongoDB');
@@ -323,12 +324,13 @@ const createUser = async () => {
     }
 };
 const main = async () => {
-    try {
-        await createJobTitle();
-    } catch (error) {
-        console.log('job title error');
-    }
-    createUser();
+    // try {
+    //     await createJobTitle();
+    // } catch (error) {
+    //     console.log('job title error');
+    // }
+    // createUser();
+    await fakeTopic();
 };
 
 main();

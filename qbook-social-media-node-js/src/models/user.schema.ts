@@ -2,6 +2,7 @@ import { Document, model, ObjectId, Schema } from 'mongoose';
 import { MediaDocument } from './media.schema';
 import { RoleType } from './types/type';
 
+//FIXME: remove role
 export interface UserDocument extends Document {
     firstName: string;
     lastName: string;
@@ -20,6 +21,7 @@ export interface UserDocument extends Document {
     isActive: boolean;
     isTwoFactorAuthEnabled: boolean;
     isBlock: boolean;
+    banedDate: Date;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -52,6 +54,7 @@ const UserSchema = new Schema<UserDocument>(
         oauthProvider: { type: String, trim: true },
         isActive: { type: Boolean, default: false },
         isTwoFactorAuthEnabled: { type: Boolean, default: false },
+        banedDate: { type: Date },
         isBlock: { type: Boolean, default: false },
     },
     { timestamps: true }

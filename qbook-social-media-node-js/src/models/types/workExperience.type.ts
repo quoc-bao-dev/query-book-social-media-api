@@ -3,6 +3,7 @@ import { WorkExperienceDocument } from '../workExperience.schema';
 export type WorkExperienceBody = {
     jobTitleId: string;
     company: string;
+    content: string;
     description: string;
     startDate: Date;
     endDate?: Date;
@@ -17,6 +18,7 @@ export type CreateWorkExperienceInput = Pick<
     | 'userId'
     | 'jobTitleId'
     | 'company'
+    | 'content'
     | 'description'
     | 'startDate'
     | 'endDate'

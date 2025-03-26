@@ -5,6 +5,11 @@ import { authMiddleware } from '../middlewares/authMiddleware';
 
 const commentRouter = Router();
 
+commentRouter.get(
+    '/post/:id',
+    wrapAsync(commentController.getCommentsByPostId)
+);
+
 commentRouter.post(
     '/:id/reply',
     authMiddleware,

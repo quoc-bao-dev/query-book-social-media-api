@@ -68,7 +68,7 @@ class LikeService {
     }
 
     async deleteLikeOfComment(commentId: string) {
-        await Like.findByIdAndDelete({
+        await Like.findOneAndDelete({
             type: 'comment',
             commentId,
         });

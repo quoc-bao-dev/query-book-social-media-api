@@ -46,6 +46,7 @@ class PostDTO {
         );
 
         const media = (this.media as MediaDocument[]).map((item) => ({
+            id: item.id,
             url: item.url,
             file: item.file,
             type: item.type,
@@ -111,6 +112,7 @@ class PostDTO {
 
                 return {
                     id: item.id,
+                    userId: user._id,
                     username: user.username,
                     fullName: `${user.firstName} ${user.lastName}`,
                     avatarUrl,
@@ -139,6 +141,7 @@ class PostDTO {
         return {
             id: this.id,
             author: {
+                id: user._id,
                 name: user.username,
                 fullName: `${user.firstName} ${user.lastName}`,
                 email: user.email,

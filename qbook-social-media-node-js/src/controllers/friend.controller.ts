@@ -25,6 +25,18 @@ const FriendController = {
 
         res.status(response.status).json(response);
     },
+
+    getSendRequest: async (req: Request, res: Response) => {
+        const userId = req.userId!;
+        const requests = await friendService.getSendRequests(userId);
+        const response = createResponse({
+            status: 200,
+            message: 'Get requests successful',
+            data: requests,
+        });
+
+        res.status(response.status).json(response);
+    },
     sendRequest: async (req: Request, res: Response) => {
         const userId = req.userId!;
         const { targetId } = req.body;
@@ -69,6 +81,19 @@ const FriendController = {
         const userId = req.userId!;
         const { id: friendId } = req.params;
         const request = await friendService.removeFriend(userId, friendId);
+
+        const response = createResponse({
+            status: 200,
+            message: 'Remove friend successful',
+            data: request,
+        });
+
+        res.status(response.status).json(response);
+    },
+    cancelRequest: async (req: Request, res: Response) => {
+        const userId = req.userId!;
+        const { id: receiverId } = req.params;
+        const request = await friendService.cancelRequest(userId, receiverId);
 
         const response = createResponse({
             status: 200,

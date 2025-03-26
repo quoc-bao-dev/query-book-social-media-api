@@ -1,3 +1,4 @@
+import config from '../config/config';
 import MediaDTO from '../DTO/media.dto';
 import saveQuestionSchema, {
     SaveQuestion,
@@ -45,6 +46,9 @@ class SaveQuestionService {
                             ? new MediaDTO(questionAvatar).toUrl()
                             : null,
                     },
+                    images: question.questionId?.images.map(
+                        (item) => `${config.IMAGE_SERVER}/${item}`
+                    ),
                 },
                 userId: {
                     ...question.userId?.toObject(),
@@ -67,6 +71,16 @@ class SaveQuestionService {
         return result;
     }
     async create(payload: any) {
+        const findQuestion = await saveQuestionSchema.findOne({
+            questionId: payload.questionId,
+            userId: payload.userId,
+        });
+
+        if (findQuestion) {
+            await findQuestion.deleteOne();
+            return null;
+        }
+
         const saveQuestion = await saveQuestionSchema.create(payload);
         return saveQuestion;
     }

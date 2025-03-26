@@ -111,6 +111,23 @@ class PendingRequestService {
         await pendingRequest.save();
         return pendingRequest;
     }
+
+    async cancelRequest(userId: string, receiverId: string) {
+        const user = await userService.findUserById(userId);
+
+        const receiverUser = await userService.findUserById(receiverId);
+
+        const pendingRequest = await PendingRequest.findOneAndDelete({
+            senderId: user.id,
+            receiverId: receiverUser.id,
+            status: 'pending',
+        });
+
+        if (!pendingRequest) {
+            throw ApiError.notFound('Pending request not found');
+        }
+        return pendingRequest;
+    }
 }
 
 export default new PendingRequestService();

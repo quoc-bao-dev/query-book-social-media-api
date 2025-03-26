@@ -33,6 +33,10 @@ const config = {
     CORS_ALLOWED_ORIGINS: process.env.CORS_ALLOWED_ORIGINS as string,
 
     STRIPE_PAYMENT_SECRET_KEY: process.env.STRIPE_PAYMENT_SECRET_KEY as string,
+
+    GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID as string,
+    GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET as string,
+    GOOGLE_REDIRECT_URI: process.env.GOOGLE_REDIRECT_URI as string,
 };
 
 if (!config.MONGO_URL) {

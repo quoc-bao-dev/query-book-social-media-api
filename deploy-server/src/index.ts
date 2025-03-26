@@ -3,12 +3,15 @@ import fs from 'fs';
 import mongoose from 'mongoose';
 import path from 'path';
 import router from './routes';
+import cors from 'cors';
 
 const app = express();
 export const PORT = process.env.PORT || 3009;
 export const deployFolder = path.join(__dirname, 'public');
+const domain = process.env.DOMAIN || 'localhost';
+const mongoURL = process.env.MONGO_URL!;
 
-mongoose.connect('mongodb://localhost:27017/query-book-deployment').then(() => {
+mongoose.connect(mongoURL).then(() => {
     console.log('Connect to deploy server');
 });
 
@@ -16,6 +19,11 @@ if (!fs.existsSync(deployFolder)) {
     fs.mkdirSync(deployFolder, { recursive: true });
 }
 
+app.use(
+    cors({
+        origin: '*',
+    })
+);
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
@@ -81,7 +89,7 @@ app.use((req: Request, res: Response) => {
     const host = req.headers.host?.split(':')[0];
     const [subdomain] = host?.split('.') || [];
 
-    if (subdomain && subdomain !== 'localhost') {
+    if (subdomain && subdomain !== domain) {
         const indexPath = path.join(deployFolder, subdomain, 'index.html');
         if (fs.existsSync(indexPath)) {
             return res.sendFile(indexPath);

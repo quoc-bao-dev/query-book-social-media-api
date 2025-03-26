@@ -15,6 +15,8 @@ import topicRouter from './topic.routes';
 import questionRouter from './question.routes';
 import notificationRouter from './notificaton.routes';
 import answerRouter from './answer.routes';
+import reportRouter from './report.routes';
+import oauthRouter from './oauth.routes';
 
 const router = Router();
 
@@ -32,8 +34,11 @@ router.use('/topics', topicRouter);
 router.use('/questions', questionRouter);
 router.use('/answers', answerRouter);
 router.use('/notify', notificationRouter);
+router.use('/report', reportRouter);
 
 router.use('/deploy', deployRouter);
 router.use('/payment/', paymentRouter);
+
+router.use('/oauth', oauthRouter);
 
 export default router;

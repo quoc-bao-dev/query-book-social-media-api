@@ -1,8 +1,19 @@
 import { Request, Response } from 'express';
 import { createResponse } from '../core';
 import commentService from '../services/comment.service';
-import { update } from 'lodash';
 const commentController = {
+    async getCommentsByPostId(req: Request, res: Response) {
+        const { id } = req.params;
+        const comments = await commentService.getCommentsByPostId(id);
+
+        const response = createResponse({
+            status: 200,
+            message: 'Get comments successful',
+            data: comments,
+        });
+        res.status(response.status).json(response);
+    },
+
     async replyComment(req: Request, res: Response) {
         const { id } = req.params;
         const { content, media } = req.body;
@@ -62,7 +73,7 @@ const commentController = {
         const { id } = req.params;
         const userId = req.userId!;
 
-        await commentService.deleteComment(userId, id);
+        await commentService.deleteComment(id, userId);
 
         const response = createResponse({
             status: 200,

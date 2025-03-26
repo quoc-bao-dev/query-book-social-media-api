@@ -9,7 +9,7 @@ const QuestionController = {
             title,
             question,
             code: { fileType, code },
-            image,
+            images,
             hashtags,
         } = req.body;
         const userId = req.userId;
@@ -23,7 +23,7 @@ const QuestionController = {
                 fileType,
                 code,
             },
-            image,
+            images,
             hashtags,
         };
 
@@ -54,7 +54,11 @@ const QuestionController = {
         const result = await questionService.getAll(
             Number(limit ?? 10),
             Number(page ?? 1),
-            s
+            {
+                search: s as string,
+                hashtags: req.query.hashtags as string,
+                topic: req.query.topic as string,
+            }
         );
         const response = createPaginationResponse({
             status: 200,
@@ -75,6 +79,44 @@ const QuestionController = {
             status: 200,
             message: 'get question by user success!',
             data,
+        });
+        res.status(response.status).json(response);
+    },
+
+    update: async (req: Request, res: Response) => {
+        const userId = req.userId;
+        const { questionId } = req.params;
+        const { question: content, code } = req.body;
+        const payload = {
+            content,
+            code,
+        };
+        const question = await questionService.updateQuestion(
+            questionId,
+            payload,
+            userId!
+        );
+
+        const response = createResponse({
+            status: 200,
+            message: 'update question success!',
+            data: question,
+        });
+
+        res.status(response.status).json(response);
+    },
+
+    delete: async (req: Request, res: Response) => {
+        const userId = req.userId;
+        const { questionId } = req.params;
+        console.log(questionId);
+
+        const result = await questionService.delete(questionId, userId!);
+
+        const response = createResponse({
+            status: 200,
+            message: 'Delete question success!',
+            data: result,
         });
         res.status(response.status).json(response);
     },

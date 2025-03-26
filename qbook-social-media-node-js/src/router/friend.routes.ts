@@ -16,6 +16,11 @@ friendRouter.get(
     authMiddleware,
     wrapAsync(FriendController.getRequests)
 );
+friendRouter.get(
+    '/send-requests',
+    authMiddleware,
+    wrapAsync(FriendController.getSendRequest)
+);
 
 friendRouter.post(
     '/send-request',
@@ -39,6 +44,12 @@ friendRouter.delete(
     '/remove/:id',
     authMiddleware,
     wrapAsync(FriendController.removeFriend)
+);
+
+friendRouter.delete(
+    '/cancel-request/:id',
+    authMiddleware,
+    wrapAsync(FriendController.cancelRequest)
 );
 
 export default friendRouter;

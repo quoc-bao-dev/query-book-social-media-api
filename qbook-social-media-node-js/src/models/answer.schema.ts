@@ -1,11 +1,13 @@
 import { Document, model, ObjectId, Schema, Types } from 'mongoose';
+import { languages } from './types/answer.type';
 
 export interface AnswerDocument extends Document {
     userId: ObjectId;
     questionId: ObjectId;
     content: String;
     code: { type: String; code: String };
-    vote: ObjectId[];
+    images: String[];
+    votes: ObjectId[];
 }
 
 const AnswerSchema = new Schema<AnswerDocument>(
@@ -16,18 +18,17 @@ const AnswerSchema = new Schema<AnswerDocument>(
         code: {
             fileType: {
                 type: String,
-                enum: [
-                    'c',
-                    'cpp',
-                    'java',
-                    'python',
-                    'javascript',
-                    'typescript',
-                ],
+                enum: languages,
             },
             code: String,
         },
-        vote: [{ type: Types.ObjectId, ref: 'User' }],
+        images: [{ type: String }],
+        votes: [
+            {
+                user: { type: Types.ObjectId, ref: 'User' },
+                voteType: { type: String, enum: ['up', 'down'] },
+            },
+        ],
     },
     { timestamps: true }
 );

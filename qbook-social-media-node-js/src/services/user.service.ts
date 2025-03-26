@@ -9,7 +9,6 @@ import UserProfile, { UserProfileDocument } from '../models/userProfile.schema';
 import { toHandleName } from '../utils/convertString';
 import jobTitleService from './jobTitle.service';
 import mediaService from './media.service';
-import { removeVietnameseTones } from '../utils/word';
 
 class UserService {
     async getMe(userId: string) {
@@ -210,6 +209,7 @@ class UserService {
             }
             const payloadMedia: UpdateMediaInput = {
                 ...payload.avatar,
+                sourceType: 'file',
                 file: payload.avatar.fileName,
             };
 
@@ -346,6 +346,13 @@ class UserService {
     }
     async findUserById(id: string) {
         const user = await User.findById(id);
+        if (!user) {
+            throw ApiError.notFound('User not found by id, ' + id);
+        }
+        return user as UserDocument;
+    }
+    async getFriendById(id: string) {
+        const user = await User.findById(id).populate('avatar');
         if (!user) {
             throw ApiError.notFound('User not found by id, ' + id);
         }

@@ -52,9 +52,14 @@ class DeployService {
     }
 
     async createHosting(payload: any) {
+        console.log(11111);
+
         const subDomain = payload.subDomain;
         const userId = payload.userId;
         try {
+            console.log(config.DEPLOY_SERVER);
+            console.log(config.DEPLOY_API_KEY);
+
             const data = await axios.post(
                 `${config.DEPLOY_SERVER}/create-hosting`,
                 { subDomain, userId },
@@ -64,9 +69,16 @@ class DeployService {
                     },
                 }
             );
+
+            console.log(2222);
+
             return data.data;
         } catch (error) {
-            throw (error as any)?.response.data;
+            console.log(3333);
+
+            console.log(error);
+            return;
+            // throw (error as any)?.response.data;
         }
     }
 

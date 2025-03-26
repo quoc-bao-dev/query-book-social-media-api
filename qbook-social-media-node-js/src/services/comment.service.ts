@@ -1,18 +1,70 @@
 import ApiError from '../core/ApiError';
+import MediaDTO from '../DTO/media.dto';
 import Comment from '../models/comment.schema';
 import { MediaDocument } from '../models/media.schema';
 import {
+    CommentResult,
     CreateCommentPostInput,
     CreateCommentRelyInput,
     CreateCommentServiceInput,
 } from '../models/types/comment.type';
 import { MediaType } from '../models/types/media.type';
+import { UserDocument } from '../models/user.schema';
 import likeService from './like.service';
 import mediaService from './media.service';
 import postService from './post.service';
 import userService from './user.service';
 
 class CommentService {
+    async getCommentsByPostId(postId: string) {
+        const populate = [
+            {
+                path: 'userId',
+                select: 'id firstName lastName avatar',
+                populate: {
+                    path: 'avatar',
+                    select: 'id url file type sourceType',
+                },
+            },
+            {
+                path: 'media',
+                select: 'id url file type sourceType',
+            },
+            {
+                path: 'replies',
+                populate: {
+                    path: 'userId',
+                    select: 'id firstName lastName avatar',
+                },
+            },
+        ];
+        const comments = await Comment.find({
+            postId,
+            isReply: false,
+        }).populate([
+            {
+                path: 'userId',
+                select: 'id firstName lastName avatar',
+                populate: {
+                    path: 'avatar',
+                    select: 'id url file type sourceType',
+                },
+            },
+            {
+                path: 'media',
+                select: 'id url file type sourceType',
+            },
+            {
+                path: 'replies',
+                populate: populate,
+            },
+        ]);
+
+        return comments.map((comment) =>
+            this.toResponse(comment as CommentResult)
+        );
+    }
+
     async commentPost(payload: CreateCommentServiceInput) {
         const userInDB = await userService.findUserById(payload.userId);
         const postInDB = await postService.findPostById(payload.postId!);
@@ -60,6 +112,7 @@ class CommentService {
         const commentPayload: CreateCommentRelyInput = {
             userId: userInDB.id,
             parent: commentInDB.id,
+            postId: commentInDB.postId,
             content: payload.content,
             isReply: true,
             media,
@@ -81,22 +134,37 @@ class CommentService {
 
     async deleteComment(commentId: string, userId: string) {
         const comment = await this.findCommentById(commentId);
+
         const post = await postService.findPostById(comment.postId.toString());
         if (
-            comment.userId.toString() !== userId ||
+            comment.userId.toString() !== userId &&
             post.userId.toString() !== userId
         ) {
             throw ApiError.forbidden(
                 'You are not allowed to delete this comment'
             );
         }
-        await mediaService.deleteMedia(comment.media?.toString()!);
+
+        if (comment.media?.toString()) {
+            await mediaService.deleteMedia(comment.media?.toString()!);
+        }
         await likeService.deleteLikeOfComment(commentId);
+
         if (comment.replies.length > 0) {
             for (const reply of comment.replies) {
                 await this.deleteCommentReply(reply.toString());
             }
         }
+
+        if (comment.isReply) {
+            const parentComment = await Comment.findById(comment.parent);
+            if (!parentComment) return;
+            parentComment.replies = parentComment?.replies.filter(
+                (i) => i.toString() !== comment.id.toString()
+            );
+            await parentComment.save();
+        }
+
         await comment.deleteOne();
     }
 
@@ -126,7 +194,8 @@ class CommentService {
     async deleteCommentReply(commentId: string) {
         const comment = await this.findCommentById(commentId);
         await likeService.deleteLikeOfComment(commentId);
-        await mediaService.deleteMedia(comment.media?.toString()!);
+        if (comment.media)
+            await mediaService.deleteMedia(comment.media?.toString()!);
         if (comment.replies.length > 0) {
             for (const reply of comment.replies) {
                 await this.deleteCommentReply(reply.toString());
@@ -140,10 +209,42 @@ class CommentService {
             throw ApiError.notFound('Not found comment to reply!');
         }
         const comment = await Comment.findById(id);
+
         if (!comment) {
             throw ApiError.notFound('Not found comment to reply!');
         }
         return comment;
+    }
+
+    toResponse(payload: CommentResult) {
+        const user = payload.userId as UserDocument;
+        return {
+            id: payload._id,
+            content: payload.content,
+            author: {
+                id: user._id,
+                fullName: `${user.firstName} ${user.lastName}`,
+                avatar: user.avatar,
+                avatarUrl:
+                    user.avatar &&
+                    new MediaDTO(user.avatar as MediaDocument).toUrl(),
+            },
+            media: payload.media && {
+                id: payload.media._id,
+                url: payload.media.url,
+                file: payload.media.file,
+                type: payload.media.type,
+                sourceType: payload.media.sourceType,
+            },
+            mediaUrl:
+                payload.media &&
+                new MediaDTO(payload.media as MediaDocument).toUrl(),
+            likes: payload.likes,
+            isReply: payload.isReply,
+            replies: (payload.replies as CommentResult[]).map((reply) =>
+                this.toResponse(reply)
+            ),
+        };
     }
 }
 

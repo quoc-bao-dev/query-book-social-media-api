@@ -1,4 +1,5 @@
 import { model, Schema, Types, Document, ObjectId } from 'mongoose';
+import { languages } from './types/answer.type';
 
 export interface QuestionDocument extends Document {
     userId: ObjectId;
@@ -6,7 +7,7 @@ export interface QuestionDocument extends Document {
     title: string;
     question: string;
     code: { fileType: string; code: string };
-    image: string;
+    images: string[];
     vote: ObjectId[];
     hashtags: ObjectId[];
 }
@@ -20,18 +21,11 @@ const QuestionSchema = new Schema<QuestionDocument>(
         code: {
             fileType: {
                 type: String,
-                enum: [
-                    'c',
-                    'cpp',
-                    'java',
-                    'python',
-                    'javascript',
-                    'typescript',
-                ],
+                enum: languages,
             },
             code: String,
         },
-        image: { type: String },
+        images: [{ type: String }],
         hashtags: [{ type: Schema.ObjectId, ref: 'Hashtag' }],
         vote: [{ type: Schema.ObjectId, ref: 'User' }],
     },

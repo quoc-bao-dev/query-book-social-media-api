@@ -1,7 +1,6 @@
 import config from '../config/config';
 import ApiError from '../core/ApiError';
 import check2fa from '../libs/redis/check2fa.redis';
-import forgotPasswordRedis from '../libs/redis/forgotPassword.redis';
 import { activeAccountRedis } from '../libs/redis/otp.redis';
 import { tokenRedis } from '../libs/redis/token.redis';
 import { CreateUserInput } from '../models/types/user.type';
@@ -17,7 +16,6 @@ import {
 } from '../utils/authToken.utils';
 import { comparePassword, hashPassword } from '../utils/bcrypt.utils';
 import { toHandleName } from '../utils/convertString';
-import { setCookie } from '../utils/cookies';
 import {
     sendEmailOtp,
     sendEmailResetPassword,

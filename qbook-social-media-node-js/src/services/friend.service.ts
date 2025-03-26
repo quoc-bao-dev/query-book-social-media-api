@@ -23,7 +23,7 @@ class FriendService {
         }
 
         const users = await Promise.all(
-            lsFriends.map((id) => userService.findUserById(id))
+            lsFriends.map((id) => userService.getFriendById(id))
         );
 
         return users.map((user) => new UserDTO(user).toResponse());
@@ -42,6 +42,28 @@ class FriendService {
 
         const lsUserRequests = lsRequest.map<UserDocument>(
             (request) => request.senderId as UserDocument
+        );
+
+        return lsUserRequests.map((user: UserDocument, index) => ({
+            ...new UserDTO(user).toUserRequest(),
+            createdAt: lsRequest[index].createdAt,
+        }));
+    }
+    async getSendRequests(userId: string) {
+        console.log(userId);
+
+        const lsRequest = await pendingRequestSchema
+            .find({
+                senderId: userId,
+                status: 'pending',
+            })
+            .populate({
+                path: 'receiverId',
+                populate: { path: 'avatar' },
+            });
+
+        const lsUserRequests = lsRequest.map<UserDocument>(
+            (request) => request.receiverId as UserDocument
         );
 
         return lsUserRequests.map((user: UserDocument, index) => ({
@@ -146,6 +168,19 @@ class FriendService {
             ],
         });
         return true;
+    }
+
+    async cancelRequest(userId: string, receiverId: string) {
+        const request = await pendingRequestService.cancelRequest(
+            userId,
+            receiverId
+        );
+
+        if (!request) {
+            throw ApiError.notFound('Pending request not found');
+        }
+
+        return request;
     }
 }
 

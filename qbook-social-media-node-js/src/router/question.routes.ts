@@ -26,4 +26,16 @@ questionRouter.post(
     wrapAsync(SaveQuestionController.create)
 );
 
+questionRouter.patch(
+    '/:questionId',
+    authMiddleware,
+    wrapAsync(QuestionController.update)
+);
+
+questionRouter.delete(
+    '/:questionId',
+    authMiddleware,
+    wrapAsync(QuestionController.delete)
+);
+
 export default questionRouter;

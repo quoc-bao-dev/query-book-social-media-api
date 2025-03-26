@@ -1,12 +1,13 @@
 import { Request, Response } from 'express';
+import { createResponse } from '../core';
 import { WorkExperienceBody } from '../models/types/workExperience.type';
 import workExperienceService from '../services/workExperience.service';
-import { createResponse } from '../core';
 
 const workExperienceController = {
     create: async (req: Request, res: Response) => {
         const {
             company,
+            content,
             description,
             jobTitleId,
             startDate,
@@ -17,6 +18,7 @@ const workExperienceController = {
 
         const workExperience = await workExperienceService.create({
             company,
+            content,
             description,
             jobTitleId,
             startDate,
@@ -35,6 +37,7 @@ const workExperienceController = {
         const { id } = req.params;
         const {
             company,
+            content,
             description,
             jobTitleId,
             startDate,
@@ -48,6 +51,7 @@ const workExperienceController = {
             userId,
             {
                 company,
+                content,
                 description,
                 jobTitleId,
                 startDate,
@@ -86,6 +90,21 @@ const workExperienceController = {
             status: 200,
             message: 'Get work experience successful',
             data: workExperience,
+        });
+        res.status(response.status).json(response);
+    },
+    getByUserId: async (req: Request, res: Response) => {
+        const { userId } = req.params;
+
+        console.log(userId);
+
+        const workExperiences = await workExperienceService.getWorkExperiences(
+            userId
+        );
+        const response = createResponse({
+            status: 200,
+            message: 'Get work experiences successful',
+            data: workExperiences,
         });
         res.status(response.status).json(response);
     },
