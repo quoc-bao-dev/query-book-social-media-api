@@ -123,6 +123,28 @@ class ReportService {
         return reports.map((report) => this.toQuestionReport(report));
     }
 
+    async getReportByPostId(postId: string) {
+        const reports = await reportSchema
+            .find({ postId: postId })
+            .populate(this.postReportOption);
+
+        return reports.map((report) => this.toPostReport(report));
+    }
+
+    async getReportByUserId(userId: string) {
+        const reports = await reportSchema
+            .find({ accountId: userId })
+            .populate(this.accountReportOption);
+        return reports.map((report) => this.toAccountReport(report));
+    }
+
+    async getReportByQuestionId(questionId: string) {
+        const reports = await reportSchema
+            .find({ questionId: questionId })
+            .populate(this.questionReportOption);
+        return reports.map((report) => this.toQuestionReport(report));
+    }
+
     async cretePostReport({
         content,
         postId,

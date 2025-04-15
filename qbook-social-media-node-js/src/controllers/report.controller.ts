@@ -39,6 +39,48 @@ const reportController = {
         res.status(response.status).json(response);
     },
 
+    async getReportByPostId(req: Request, res: Response) {
+        const { postId } = req.params;
+
+        const reports = await reportService.getReportByPostId(postId);
+
+        const response = createResponse({
+            status: 200,
+            message: 'get report by post id successful!',
+            data: reports,
+        });
+
+        res.status(response.status).json(response);
+    },
+
+    async getReportByAccountId(req: Request, res: Response) {
+        const { accountId } = req.params;
+
+        const reports = await reportService.getReportByUserId(accountId);
+
+        const response = createResponse({
+            status: 200,
+            message: 'get report by account id successful!',
+            data: reports,
+        });
+
+        res.status(response.status).json(response);
+    },
+
+    async getReportByQuestionId(req: Request, res: Response) {
+        const { questionId } = req.params;
+
+        const reports = await reportService.getReportByQuestionId(questionId);
+
+        const response = createResponse({
+            status: 200,
+            message: 'get report by question id successful!',
+            data: reports,
+        });
+
+        res.status(response.status).json(response);
+    },
+
     async reportPost(req: Request, res: Response) {
         const { postId } = req.params;
         const { reason, content } = req.body;

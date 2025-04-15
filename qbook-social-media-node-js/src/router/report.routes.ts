@@ -26,6 +26,25 @@ reportRouter.get(
     wrapAsync(reportController.getQuestionReports)
 );
 
+reportRouter.get(
+    '/account/:accountId',
+    // authMiddleware,
+    wrapAsync(reportController.getReportByAccountId)
+);
+
+reportRouter.get(
+    '/post/:postId',
+    // adminMiddleware(['admin', 'moderator', 'super-admin']),
+    // authMiddleware,
+    wrapAsync(reportController.getReportByPostId)
+);
+
+reportRouter.get(
+    '/question/:questionId',
+    // authMiddleware,
+    wrapAsync(reportController.getReportByQuestionId)
+);
+
 reportRouter.post(
     '/post/:postId',
     authMiddleware,
